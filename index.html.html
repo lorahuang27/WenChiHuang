@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>銘勁汽車｜行銷成效面板 2026</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans TC',sans-serif}
+body{background:linear-gradient(135deg,#e8eaf6 0%,#fce4ec 40%,#e0f2f1 100%);min-height:100vh;padding:16px}
+.shell{display:flex;min-height:calc(100vh - 32px);border-radius:16px;overflow:hidden}
+.sidebar{width:190px;flex-shrink:0;background:rgba(255,255,255,.55);backdrop-filter:blur(12px);border-right:1px solid rgba(255,255,255,.7);display:flex;flex-direction:column;padding:16px 0}
+.sb-brand{padding:0 16px 14px;border-bottom:1px solid rgba(0,0,0,.06);margin-bottom:8px}
+.sb-logo{font-size:14px;font-weight:700;color:#1a1a2e}
+.sb-sub{font-size:10px;color:#9ca3af;margin-top:2px}
+.sb-section{font-size:9px;font-weight:700;letter-spacing:.1em;color:#c0c0c8;padding:8px 16px 4px;text-transform:uppercase}
+.sb-item{display:flex;align-items:center;gap:8px;padding:8px 14px;cursor:pointer;font-size:12px;color:#6b7280;transition:all .15s;margin:1px 8px;border-radius:8px}
+.sb-item svg{width:14px;height:14px;flex-shrink:0;stroke:currentColor;fill:none;stroke-width:1.5}
+.sb-item:hover{background:rgba(255,255,255,.6);color:#1a1a2e}
+.sb-item.active{background:rgba(230,57,70,.1);color:#e63946;font-weight:500}
+.sb-bottom{margin-top:auto;padding:12px 8px 0;border-top:1px solid rgba(0,0,0,.06)}
+.main{flex:1;display:flex;flex-direction:column;min-width:0;overflow:hidden}
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:16px 22px 0;flex-wrap:wrap;gap:8px}
+.tb-left{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.page-title{font-size:17px;font-weight:700;color:#1a1a2e}
+.filter-pill{display:flex;align-items:center;gap:4px;padding:5px 12px;background:rgba(255,255,255,.65);border:1px solid rgba(255,255,255,.9);border-radius:20px;font-size:11px;color:#6b7280;cursor:pointer;user-select:none}
+.filter-pill.am{border-color:rgba(230,57,70,.4);color:#e63946;background:rgba(255,240,241,.7)}
+.tb-right{display:flex;align-items:center;gap:10px}
+.upd-txt{font-size:10px;color:#9ca3af}
+.btn-up{display:flex;align-items:center;gap:5px;padding:5px 11px;background:rgba(255,255,255,.65);border:1px solid rgba(255,255,255,.9);border-radius:8px;font-size:11px;color:#6b7280;cursor:pointer}
+.btn-up:hover{background:rgba(255,255,255,.85)}
+.content{padding:14px 22px 24px;flex:1;overflow-y:auto}
+.month-dd{background:rgba(255,255,255,.88);backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,.9);border-radius:12px;padding:14px;margin-bottom:12px;display:none}
+.month-dd.open{display:block}
+.month-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:5px}
+.m-btn{padding:5px 2px;border:1px solid rgba(0,0,0,.1);border-radius:7px;font-size:11px;color:#6b7280;cursor:pointer;background:rgba(255,255,255,.6);text-align:center;transition:all .12s}
+.m-btn.sel{background:#e63946;color:#fff;border-color:#e63946}
+.m-btn.dis{color:#ccc;background:rgba(255,255,255,.3);cursor:default;border-color:transparent}
+.dd-footer{display:flex;justify-content:flex-end;gap:6px;margin-top:10px}
+.btn-p{padding:5px 12px;background:#e63946;color:#fff;border:none;border-radius:7px;font-size:11px;cursor:pointer;font-weight:500}
+.btn-s{padding:5px 12px;background:rgba(255,255,255,.6);color:#6b7280;border:1px solid rgba(0,0,0,.1);border-radius:7px;font-size:11px;cursor:pointer}
+.kpi-row{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;margin-bottom:14px}
+.kpi{background:rgba(255,255,255,.55);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,.8);border-radius:12px;padding:12px 14px}
+.kpi-l{font-size:10px;color:#9ca3af;margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.kpi-v{font-size:20px;font-weight:700;color:#1a1a2e;line-height:1.1}
+.kpi-s{font-size:10px;margin-top:3px;color:#9ca3af}
+.mod-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.mod{background:rgba(255,255,255,.55);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,.8);border-radius:12px;padding:14px;cursor:pointer;transition:background .15s}
+.mod:hover{background:rgba(255,255,255,.78)}
+.mod-ico{width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;margin-bottom:10px}
+.mod-t{font-size:12px;font-weight:600;color:#1a1a2e;margin-bottom:3px}
+.mod-d{font-size:11px;color:#6b7280;line-height:1.45}
+.mod-ft{display:flex;align-items:center;justify-content:space-between;margin-top:10px;padding-top:8px;border-top:1px solid rgba(0,0,0,.06)}
+.arr{font-size:12px;color:#c0c0c8}
+.tag{display:inline-block;font-size:10px;font-weight:500;padding:2px 8px;border-radius:20px}
+.t-red{background:rgba(230,57,70,.12);color:#e63946}
+.t-green{background:rgba(22,163,74,.1);color:#15803d}
+.t-blue{background:rgba(29,78,216,.1);color:#1d4ed8}
+.t-amber{background:rgba(180,83,9,.1);color:#b45309}
+.t-gray{background:rgba(107,114,128,.1);color:#6b7280}
+.page{display:none}
+.page.active{display:block}
+.dh{display:flex;align-items:center;gap:8px;margin-bottom:12px;flex-wrap:wrap}
+.back{padding:4px 10px;background:rgba(255,255,255,.6);border:1px solid rgba(255,255,255,.9);border-radius:7px;font-size:11px;color:#6b7280;cursor:pointer}
+.back:hover{background:rgba(255,255,255,.85)}
+.dtitle{font-size:15px;font-weight:700;color:#1a1a2e}
+.card{background:rgba(255,255,255,.55);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,.8);border-radius:12px;padding:14px 16px;margin-bottom:10px}
+.g2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.g3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.g4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.stat{background:rgba(255,255,255,.45);border-radius:8px;padding:10px 12px}
+.sl{font-size:10px;color:#9ca3af;margin-bottom:2px}
+.sv{font-size:17px;font-weight:700;color:#1a1a2e}
+.ss{font-size:10px;color:#9ca3af;margin-top:1px}
+.blank{text-align:center;padding:18px;color:#9ca3af;font-size:11px;background:rgba(255,255,255,.3);border-radius:8px;border:1px dashed rgba(0,0,0,.1)}
+.br{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.brl{font-size:11px;color:#6b7280;width:62px;flex-shrink:0}
+.brt{flex:1;background:rgba(0,0,0,.07);border-radius:3px;height:5px}
+.brf{height:5px;border-radius:3px}
+.brv{font-size:11px;color:#1a1a2e;width:32px;text-align:right;flex-shrink:0}
+.tr{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid rgba(0,0,0,.06);font-size:12px}
+.tr:last-child{border-bottom:none}
+.dv{border:none;border-top:1px solid rgba(0,0,0,.07);margin:10px 0}
+.lgd{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:8px;font-size:10px;color:#6b7280}
+.li{display:flex;align-items:center;gap:3px}
+.lsq{width:8px;height:8px;border-radius:2px;flex-shrink:0}
+.sdot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.sec-l{font-size:9px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:#9ca3af;margin:12px 0 6px}
+.cpv-row{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.cpv-label{font-size:11px;color:#6b7280;width:78px;flex-shrink:0}
+.cpv-input{flex:1;padding:6px 10px;background:rgba(255,255,255,.7);border:1px solid rgba(0,0,0,.1);border-radius:7px;font-size:12px;color:#1a1a2e;outline:none;transition:border-color .15s}
+.cpv-input:focus{border-color:#e63946;background:rgba(255,255,255,.95)}
+.cpv-visitors{font-size:10px;color:#9ca3af;width:50px;text-align:center;flex-shrink:0}
+.cpv-result{font-size:12px;font-weight:600;color:#e63946;width:68px;text-align:right;flex-shrink:0}
+.uoverlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.3);backdrop-filter:blur(4px);z-index:999;align-items:center;justify-content:center}
+.uoverlay.open{display:flex}
+.mbox{background:rgba(255,255,255,.95);border-radius:14px;padding:22px;width:400px;max-width:90vw;border:1px solid rgba(255,255,255,.9)}
+.drop{border:1.5px dashed rgba(0,0,0,.15);border-radius:8px;padding:22px;text-align:center;cursor:pointer;margin-bottom:10px;background:rgba(255,255,255,.4)}
+.drop:hover{background:rgba(255,255,255,.65)}
+</style>
+</head>
+<body>
+<div class="shell">
+
+<div class="sidebar">
+  <div class="sb-brand">
+    <div class="sb-logo">銘勁汽車</div>
+    <div class="sb-sub">MG 桃園經銷商</div>
+  </div>
+  <div class="sb-section">主要</div>
+  <div class="sb-item active" onclick="gp('overview',this)">
+    <svg viewBox="0 0 14 14"><rect x="1" y="1" width="5" height="5" rx="1"/><rect x="8" y="1" width="5" height="5" rx="1"/><rect x="1" y="8" width="5" height="5" rx="1"/><rect x="8" y="8" width="5" height="5" rx="1"/></svg>總覽
+  </div>
+  <div class="sb-item" onclick="gp('ads',this)">
+    <svg viewBox="0 0 14 14"><rect x="1" y="8" width="3" height="5" rx="1"/><rect x="5.5" y="5" width="3" height="8" rx="1"/><rect x="10" y="2" width="3" height="11" rx="1"/></svg>Google Ads
+  </div>
+  <div class="sb-item" onclick="gp('visitors',this)">
+    <svg viewBox="0 0 14 14"><circle cx="5" cy="4" r="2"/><path d="M1 12c0-2.2 1.8-4 4-4s4 1.8 4 4"/><circle cx="11" cy="4" r="1.5"/><path d="M11 7.5c1.5.4 2.5 1.8 2.5 3.5"/></svg>來店分析
+  </div>
+  <div class="sb-item" onclick="gp('fanpage',this)">
+    <svg viewBox="0 0 14 14"><path d="M7 2C4.8 2 3 3.6 3 5.6c0 3 4 6.4 4 6.4s4-3.4 4-6.4C11 3.6 9.2 2 7 2z"/></svg>據點粉專
+  </div>
+  <div class="sb-item" onclick="gp('cpv',this)">
+    <svg viewBox="0 0 14 14"><circle cx="7" cy="7" r="5.5"/><path d="M7 4.5v5M5 5.5h3.5a1 1 0 010 3H5"/></svg>單位成本
+  </div>
+  <div class="sb-section">活動</div>
+  <div class="sb-item" onclick="gp('events',this)">
+    <svg viewBox="0 0 14 14"><rect x="1" y="3" width="12" height="10" rx="1.5"/><path d="M4 2v2M10 2v2M1 6h12"/></svg>活動成效
+  </div>
+  <div class="sb-item" onclick="gp('tasks',this)">
+    <svg viewBox="0 0 14 14"><path d="M2 3.5h10M2 7h7M2 10.5h5"/><circle cx="11.5" cy="10.5" r="1.5"/></svg>工作進度
+  </div>
+  <div class="sb-bottom">
+    <div class="sb-item" onclick="openU()">
+      <svg viewBox="0 0 14 14"><path d="M7 9V2M4 5l3-3 3 3M2 11h10"/></svg>上傳資料
+    </div>
+  </div>
+</div>
+
+<div class="main">
+  <div class="topbar">
+    <div class="tb-left">
+      <span class="page-title" id="pgTitle">總覽</span>
+      <div class="filter-pill" id="mPill" onclick="toggleDD()">
+        <svg style="width:11px;height:11px;stroke:currentColor;fill:none;stroke-width:1.5" viewBox="0 0 12 12"><rect x="1" y="2" width="10" height="9" rx="1"/><path d="M4 1v2M8 1v2M1 5h10"/></svg>
+        <span id="mLabel">2026 全部</span>
+        <svg style="width:10px;height:10px;stroke:currentColor;fill:none;stroke-width:1.5" viewBox="0 0 12 12"><path d="M3 4.5l3 3 3-3"/></svg>
+      </div>
+    </div>
+    <div class="tb-right">
+      <span class="upd-txt" id="updTxt">資料更新：2026-03-31</span>
+      <button class="btn-up" onclick="openU()">
+        <svg style="width:12px;height:12px;stroke:currentColor;fill:none;stroke-width:1.5" viewBox="0 0 14 14"><path d="M7 9V2M4 5l3-3 3 3M2 11h10"/></svg>上傳資料
+      </button>
+    </div>
+  </div>
+
+  <div class="content">
+    <div class="month-dd" id="mDD">
+      <div style="font-size:10px;font-weight:700;color:#9ca3af;letter-spacing:.08em;margin-bottom:8px">2026 年（可複選，灰色為尚無資料）</div>
+      <div class="month-grid">
+        <button class="m-btn sel" data-m="1" onclick="toggleM(this)">1 月</button>
+        <button class="m-btn sel" data-m="2" onclick="toggleM(this)">2 月</button>
+        <button class="m-btn sel" data-m="3" onclick="toggleM(this)">3 月</button>
+        <button class="m-btn dis" data-m="4">4 月</button>
+        <button class="m-btn dis" data-m="5">5 月</button>
+        <button class="m-btn dis" data-m="6">6 月</button>
+        <button class="m-btn dis" data-m="7">7 月</button>
+        <button class="m-btn dis" data-m="8">8 月</button>
+        <button class="m-btn dis" data-m="9">9 月</button>
+        <button class="m-btn dis" data-m="10">10 月</button>
+        <button class="m-btn dis" data-m="11">11 月</button>
+        <button class="m-btn dis" data-m="12">12 月</button>
+      </div>
+      <div class="dd-footer">
+        <button class="btn-s" onclick="selAll()">全選有資料月份</button>
+        <button class="btn-p" onclick="applyM()">套用</button>
+      </div>
+    </div>
+
+    <!-- 總覽 -->
+    <div id="pg-overview" class="page active">
+      <div class="kpi-row">
+        <div class="kpi"><div class="kpi-l">Google Ads CTR</div><div class="kpi-v">—</div><div class="kpi-s">待串接資料</div></div>
+        <div class="kpi"><div class="kpi-l">粉專觸及率（三所均）</div><div class="kpi-v">—</div><div class="kpi-s">待 Meta 資料</div></div>
+        <div class="kpi"><div class="kpi-l">數位廣告費用</div><div class="kpi-v">—</div><div class="kpi-s">預算 $8,100／月</div></div>
+        <div class="kpi"><div class="kpi-l">單位來店成本 CPV</div><div class="kpi-v">—</div><div class="kpi-s">待費用資料</div></div>
+        <div class="kpi"><div class="kpi-l">工作完成率</div><div class="kpi-v">37%</div><div class="kpi-s">4 / 11 項完成</div></div>
+      </div>
+      <div class="mod-grid">
+        <div class="mod" onclick="gp('ads',sbByPg('ads'))"><div class="mod-ico" style="background:rgba(230,57,70,.12)"><svg width="15" height="15" viewBox="0 0 14 14" fill="none" stroke="#e63946" stroke-width="1.5"><rect x="1" y="8" width="3" height="5" rx="1"/><rect x="5.5" y="5" width="3" height="8" rx="1"/><rect x="10" y="2" width="3" height="11" rx="1"/></svg></div><div class="mod-t">Google Ads 成效</div><div class="mod-d">曝光、點擊數、CTR、CPC、轉換成本</div><div class="mod-ft"><span class="tag t-gray">待串接</span><span class="arr">→</span></div></div>
+        <div class="mod" onclick="gp('visitors',sbByPg('visitors'))"><div class="mod-ico" style="background:rgba(22,163,74,.1)"><svg width="15" height="15" viewBox="0 0 14 14" fill="none" stroke="#16a34a" stroke-width="1.5"><circle cx="5" cy="4" r="2"/><path d="M1 12c0-2.2 1.8-4 4-4s4 1.8 4 4"/><circle cx="11" cy="4" r="1.5"/><path d="M11 7.5c1.5.4 2.5 1.8 2.5 3.5"/></svg></div><div class="mod-t">來店客戶分析</div><div class="mod-d">來源佔比、地區分布、轄區比、考量因素</div><div class="mod-ft"><span class="tag t-green" id="visTag">467 人次</span><span class="arr">→</span></div></div>
+        <div class="mod" onclick="gp('fanpage',sbByPg('fanpage'))"><div class="mod-ico" style="background:rgba(124,58,237,.1)"><svg width="15" height="15" viewBox="0 0 14 14" fill="none" stroke="#7c3aed" stroke-width="1.5"><path d="M7 2C4.8 2 3 3.6 3 5.6c0 3 4 6.4 4 6.4s4-3.4 4-6.4C11 3.6 9.2 2 7 2z"/></svg></div><div class="mod-t">據點粉專</div><div class="mod-d">追蹤數、觸及、計分、私訊、打氣金</div><div class="mod-ft"><span class="tag t-blue">中壢 160 分</span><span class="arr">→</span></div></div>
+        <div class="mod" onclick="gp('cpv',sbByPg('cpv'))"><div class="mod-ico" style="background:rgba(180,83,9,.1)"><svg width="15" height="15" viewBox="0 0 14 14" fill="none" stroke="#b45309" stroke-width="1.5"><circle cx="7" cy="7" r="5.5"/><path d="M7 4.5v5M5 5.5h3.5a1 1 0 010 3H5"/></svg></div><div class="mod-t">單位來店成本 CPV</div><div class="mod-d">Google、FB、電視牆 CPV 與渠道貢獻率</div><div class="mod-ft"><span class="tag t-amber">可即時計算</span><span class="arr">→</span></div></div>
+        <div class="mod" onclick="gp('events',sbByPg('events'))"><div class="mod-ico" style="background:rgba(15,110,86,.1)"><svg width="15" height="15" viewBox="0 0 14 14" fill="none" stroke="#0f6e56" stroke-width="1.5"><rect x="1" y="3" width="12" height="10" rx="1.5"/><path d="M4 2v2M10 2v2M1 6h12"/></svg></div><div class="mod-t">活動成效</div><div class="mod-d">外展 / 店頭，活動前後來店對比</div><div class="mod-ft"><span class="tag t-amber">Q2 外展進行中</span><span class="arr">→</span></div></div>
+        <div class="mod" onclick="gp('tasks',sbByPg('tasks'))"><div class="mod-ico" style="background:rgba(107,114,128,.1)"><svg width="15" height="15" viewBox="0 0 14 14" fill="none" stroke="#6b7280" stroke-width="1.5"><path d="M2 3.5h10M2 7h7M2 10.5h5"/><circle cx="11.5" cy="10.5" r="1.5"/></svg></div><div class="mod-t">工作進度</div><div class="mod-d">預警清單、類別進度、準時完成率</div><div class="mod-ft"><span class="tag t-green">完成率 37%</span><span class="arr">→</span></div></div>
+      </div>
+    </div>
+
+    <!-- Google Ads -->
+    <div id="pg-ads" class="page">
+      <div class="dh"><button class="back" onclick="gp('overview',sbByPg('overview'))">← 總覽</button><span class="dtitle">Google Ads 成效</span><span class="tag t-gray" style="margin-left:4px">待串接</span></div>
+      <div class="g4"><div class="stat"><div class="sl">曝光次數</div><div class="sv">—</div></div><div class="stat"><div class="sl">點擊數</div><div class="sv">—</div></div><div class="stat"><div class="sl">CTR</div><div class="sv">—</div></div><div class="stat"><div class="sl">平均 CPC</div><div class="sv">—</div></div></div>
+      <div class="sec-l">預算使用</div>
+      <div class="g2">
+        <div class="card"><div style="font-size:11px;color:#6b7280;margin-bottom:5px">Google Ads 月預算</div><div style="font-size:22px;font-weight:700;color:#1a1a2e">$5,400</div><div class="dv"></div><div class="br"><div class="brl">已使用</div><div class="brt"><div class="brf" style="width:0%;background:#e63946"></div></div><div class="brv">—</div></div><div class="br"><div class="brl">剩餘</div><div class="brt"><div class="brf" style="width:100%;background:#d1d5db"></div></div><div class="brv">$5,400</div></div></div>
+        <div class="card"><div style="font-size:11px;color:#6b7280;margin-bottom:5px">FB Ads 月預算</div><div style="font-size:22px;font-weight:700;color:#1a1a2e">$2,700</div><div class="dv"></div><div class="br"><div class="brl">已使用</div><div class="brt"><div class="brf" style="width:0%;background:#7c3aed"></div></div><div class="brv">—</div></div><div class="br"><div class="brl">剩餘</div><div class="brt"><div class="brf" style="width:100%;background:#d1d5db"></div></div><div class="brv">$2,700</div></div></div>
+      </div>
+      <div class="blank">串接 Google Ads API 或上傳報表後自動顯示趨勢圖表</div>
+    </div>
+
+    <!-- 來店分析 -->
+    <div id="pg-visitors" class="page">
+      <div class="dh"><button class="back" onclick="gp('overview',sbByPg('overview'))">← 總覽</button><span class="dtitle">來店客戶分析</span><span class="tag t-green" style="margin-left:4px" id="visRange">2026.01–03</span></div>
+      <div class="g4"><div class="stat"><div class="sl">總來店人次</div><div class="sv" id="vTot">467</div></div><div class="stat"><div class="sl">不重複來客</div><div class="sv" id="vUniq">328</div></div><div class="stat"><div class="sl">最大來源</div><div class="sv" style="font-size:12px">電視節目/廣告</div><div class="ss" id="vTop">109次（23%）</div></div><div class="stat"><div class="sl">最多來客區</div><div class="sv" style="font-size:12px">中壢區</div><div class="ss" id="vDist">130 人次</div></div></div>
+      <div class="g2" style="margin-top:10px">
+        <div class="card"><div style="font-size:11px;font-weight:600;color:#1a1a2e;margin-bottom:6px">來源佔比</div><div class="lgd"><span class="li"><span class="lsq" style="background:#e63946"></span>電視 23%</span><span class="li"><span class="lsq" style="background:#9ca3af"></span>未填 15%</span><span class="li"><span class="lsq" style="background:#1d4ed8"></span>社群 13%</span><span class="li"><span class="lsq" style="background:#f59e0b"></span>親友 12%</span></div><div style="position:relative;height:175px"><canvas id="cSrc" role="img" aria-label="來源佔比圓餅圖">來源分布</canvas></div></div>
+        <div class="card"><div style="font-size:11px;font-weight:600;color:#1a1a2e;margin-bottom:6px">地區分布</div><div style="position:relative;height:195px"><canvas id="cDist" role="img" aria-label="地區分布長條圖">地區分布</canvas></div></div>
+      </div>
+      <div class="g2">
+        <div class="card"><div style="font-size:11px;font-weight:600;color:#1a1a2e;margin-bottom:6px">購車考量因素</div><div style="position:relative;height:185px"><canvas id="cConsid" role="img" aria-label="考量因素橫條圖">考量因素</canvas></div></div>
+        <div class="card"><div style="font-size:11px;font-weight:600;color:#1a1a2e;margin-bottom:6px">轄區佔比（去重複）</div><div class="br" style="margin-top:6px"><div class="brl">中壢所轄</div><div class="brt"><div class="brf" style="width:52.7%;background:#e63946"></div></div><div class="brv">173</div></div><div class="br"><div class="brl">桃園所轄</div><div class="brt"><div class="brf" style="width:23.8%;background:#1d4ed8"></div></div><div class="brv">78</div></div><div class="br"><div class="brl">八德所轄</div><div class="brt"><div class="brf" style="width:9.1%;background:#16a34a"></div></div><div class="brv">30</div></div><div class="br"><div class="brl">外縣市</div><div class="brt"><div class="brf" style="width:12.8%;background:#9ca3af"></div></div><div class="brv">42</div></div><div class="dv"></div><div style="font-size:11px;font-weight:600;color:#1a1a2e;margin-bottom:5px">月來店趨勢</div><div style="position:relative;height:90px"><canvas id="cMon" role="img" aria-label="月來店趨勢">月趨勢</canvas></div></div>
+      </div>
+    </div>
+
+    <!-- 粉專 -->
+    <div id="pg-fanpage" class="page">
+      <div class="dh"><button class="back" onclick="gp('overview',sbByPg('overview'))">← 總覽</button><span class="dtitle">據點粉專</span><span class="tag t-blue" style="margin-left:4px">2026.04</span></div>
+      <div class="g3">
+        <div class="card" style="border-top:2.5px solid #e63946"><div style="display:flex;align-items:center;gap:5px;margin-bottom:8px"><div class="sdot" style="background:#e63946"></div><span style="font-size:12px;font-weight:600;color:#1a1a2e">中壢所</span></div><div class="stat" style="margin-bottom:5px"><div class="sl">粉專計分</div><div class="sv" style="color:#e63946">160 分</div><div class="ss">目標差距 −90 分</div></div><div class="stat" style="margin-bottom:5px"><div class="sl">完成貼文</div><div class="sv">2 篇</div><div class="ss">W1、W2 準時合規</div></div><div class="stat"><div class="sl">加碼任務</div><div class="sv" style="color:#16a34a">+20 分</div></div><div class="dv"></div><div class="blank">追蹤數、觸及、私訊<br>待串接 Meta API</div></div>
+        <div class="card" style="border-top:2.5px solid #16a34a"><div style="display:flex;align-items:center;gap:5px;margin-bottom:8px"><div class="sdot" style="background:#16a34a"></div><span style="font-size:12px;font-weight:600;color:#1a1a2e">八德所</span></div><div class="stat" style="margin-bottom:5px"><div class="sl">粉專計分</div><div class="sv" style="color:#15803d">90 分</div><div class="ss">目標差距 −160 分</div></div><div class="stat" style="margin-bottom:5px"><div class="sl">完成貼文</div><div class="sv">1 篇</div><div class="ss">W1 準時合規</div></div><div class="stat"><div class="sl">加碼任務</div><div class="sv" style="color:#16a34a">+20 分</div></div><div class="dv"></div><div class="blank">追蹤數、觸及、私訊<br>待串接 Meta API</div></div>
+        <div class="card" style="border-top:2.5px solid #1d4ed8"><div style="display:flex;align-items:center;gap:5px;margin-bottom:8px"><div class="sdot" style="background:#1d4ed8"></div><span style="font-size:12px;font-weight:600;color:#1a1a2e">桃園所</span></div><div class="stat" style="margin-bottom:5px"><div class="sl">粉專計分</div><div class="sv" style="color:#1d4ed8">90 分</div><div class="ss">目標差距 −160 分</div></div><div class="stat" style="margin-bottom:5px"><div class="sl">完成貼文</div><div class="sv">1 篇</div><div class="ss">W1 準時合規</div></div><div class="stat"><div class="sl">加碼任務</div><div class="sv" style="color:#16a34a">+20 分</div></div><div class="dv"></div><div class="blank">追蹤數、觸及、私訊<br>待串接 Meta API</div></div>
+      </div>
+      <div class="card" style="margin-top:0">
+        <div style="font-size:11px;font-weight:600;color:#1a1a2e;margin-bottom:8px">各所計分比較（目標線 250 分，滿分約 330）</div>
+        <div style="position:relative;height:165px"><canvas id="cScore" role="img" aria-label="粉專計分比較含目標線250分">計分比較</canvas></div>
+        <div style="display:flex;align-items:center;gap:14px;margin-top:8px;font-size:10px;color:#6b7280;flex-wrap:wrap">
+          <span style="display:flex;align-items:center;gap:3px"><span style="width:14px;height:3px;background:#e63946;display:inline-block;border-radius:2px"></span>中壢所</span>
+          <span style="display:flex;align-items:center;gap:3px"><span style="width:14px;height:3px;background:#16a34a;display:inline-block;border-radius:2px"></span>八德所</span>
+          <span style="display:flex;align-items:center;gap:3px"><span style="width:14px;height:3px;background:#1d4ed8;display:inline-block;border-radius:2px"></span>桃園所</span>
+          <span style="display:flex;align-items:center;gap:3px"><span style="width:22px;height:0;border-top:2px dashed #f59e0b;display:inline-block"></span>目標 250 分</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- CPV -->
+    <div id="pg-cpv" class="page">
+      <div class="dh"><button class="back" onclick="gp('overview',sbByPg('overview'))">← 總覽</button><span class="dtitle">單位來店成本 CPV</span></div>
+      <div class="g4" style="margin-bottom:10px">
+        <div class="stat"><div class="sl">Google Ads CPV</div><div class="sv" id="cpvGoogle">—</div></div>
+        <div class="stat"><div class="sl">FB Ads CPV</div><div class="sv" id="cpvFB">—</div><div class="ss">61 次來店</div></div>
+        <div class="stat"><div class="sl">電視牆 CPV</div><div class="sv" id="cpvTV">—</div><div class="ss">42 次來店</div></div>
+        <div class="stat"><div class="sl">電視節目 CPV</div><div class="sv" id="cpvTVs">—</div><div class="ss">109 次來店</div></div>
+      </div>
+      <div class="sec-l">費用輸入（即時計算）</div>
+      <div class="card">
+        <div style="font-size:11px;color:#6b7280;margin-bottom:10px">輸入各渠道廣告費用，系統自動計算 CPV = 費用 ÷ 來店數</div>
+        <div style="display:grid;grid-template-columns:78px 1fr 50px 68px;gap:6px;margin-bottom:6px;font-size:9px;color:#9ca3af;font-weight:700;letter-spacing:.06em;text-transform:uppercase">
+          <span>渠道</span><span>本月費用（元）</span><span style="text-align:center">來店數</span><span style="text-align:right">CPV</span>
+        </div>
+        <div class="cpv-row"><div class="cpv-label">Google Ads</div><input class="cpv-input" type="number" placeholder="0" min="0" id="iGoogle" oninput="calcCPV()"><div class="cpv-visitors">— 次</div><div class="cpv-result" id="rGoogle">—</div></div>
+        <div class="cpv-row"><div class="cpv-label">FB / IG Ads</div><input class="cpv-input" type="number" placeholder="0" min="0" id="iFB" oninput="calcCPV()"><div class="cpv-visitors">61 次</div><div class="cpv-result" id="rFB">—</div></div>
+        <div class="cpv-row"><div class="cpv-label">電視牆</div><input class="cpv-input" type="number" placeholder="0" min="0" id="iTV" oninput="calcCPV()"><div class="cpv-visitors">42 次</div><div class="cpv-result" id="rTV">—</div></div>
+        <div class="cpv-row"><div class="cpv-label">電視節目</div><input class="cpv-input" type="number" placeholder="0" min="0" id="iTVs" oninput="calcCPV()"><div class="cpv-visitors">109 次</div><div class="cpv-result" id="rTVs">—</div></div>
+        <div class="cpv-row"><div class="cpv-label">YT</div><input class="cpv-input" type="number" placeholder="0" min="0" id="iYT" oninput="calcCPV()"><div class="cpv-visitors">30 次</div><div class="cpv-result" id="rYT">—</div></div>
+        <div class="dv"></div>
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px">
+          <span style="font-size:11px;color:#6b7280">總數位費用：<strong id="totalBudget" style="color:#1a1a2e">$0</strong></span>
+          <span style="font-size:11px;color:#6b7280">綜合 CPV：<strong id="totalCPV" style="color:#e63946;font-size:16px">—</strong></span>
+        </div>
+      </div>
+      <div class="card">
+        <div style="font-size:11px;font-weight:600;color:#1a1a2e;margin-bottom:6px">各渠道來店貢獻率</div>
+        <div style="position:relative;height:185px"><canvas id="cCPV" role="img" aria-label="渠道貢獻率長條圖">渠道貢獻</canvas></div>
+      </div>
+    </div>
+
+    <!-- 活動 -->
+    <div id="pg-events" class="page">
+      <div class="dh"><button class="back" onclick="gp('overview',sbByPg('overview'))">← 總覽</button><span class="dtitle">活動成效</span></div>
+      <div class="g2">
+        <div class="card"><div style="font-size:12px;font-weight:600;color:#1a1a2e;margin-bottom:6px">Q2 外展活動</div><div style="font-size:11px;color:#6b7280;margin-bottom:8px">場地暫定 NOVA｜負責：雯琪、憶雯</div><div class="stat" style="margin-bottom:5px"><div class="sl">預計完成日</div><div class="sv" style="font-size:13px">2026-04-24</div></div><div class="stat"><div class="sl">狀態</div><div class="sv"><span class="tag t-amber">進行中</span></div></div></div>
+        <div class="blank" style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;min-height:120px"><span>活動完成後填入資料</span><span style="font-size:10px;margin-top:4px">支援外展、店頭、試乘會多種類型</span></div>
+      </div>
+      <div class="blank" style="margin-top:10px">活動前後來店對比圖表將在資料填入後自動產出</div>
+    </div>
+
+    <!-- 工作進度 -->
+    <div id="pg-tasks" class="page">
+      <div class="dh"><button class="back" onclick="gp('overview',sbByPg('overview'))">← 總覽</button><span class="dtitle">工作進度</span><span class="tag t-green" style="margin-left:4px">2026.04</span></div>
+      <div class="g4"><div class="stat"><div class="sl">總項目</div><div class="sv">11</div></div><div class="stat"><div class="sl">已完成</div><div class="sv" style="color:#16a34a">4</div></div><div class="stat"><div class="sl">進行中</div><div class="sv" style="color:#1d4ed8">6</div></div><div class="stat"><div class="sl">準時完成率</div><div class="sv">100%</div></div></div>
+      <div class="sec-l">預警清單</div>
+      <div class="card">
+        <div class="tr"><div style="flex:1;color:#1a1a2e">銘勁特案報告電子簽核</div><span class="tag t-red">04/14 到期</span><div style="font-size:10px;color:#9ca3af;margin-left:6px">雯琪、孟璇、昊承</div></div>
+        <div class="tr"><div style="flex:1;color:#1a1a2e">行銷面板架構</div><span class="tag t-amber">04/17 到期</span><div style="font-size:10px;color:#9ca3af;margin-left:6px">雯琪</div></div>
+        <div class="tr"><div style="flex:1;color:#1a1a2e">桃園戶外電視牆&amp;公車</div><span class="tag t-amber">04/20 到期</span><div style="font-size:10px;color:#9ca3af;margin-left:6px">雯琪</div></div>
+        <div class="tr"><div style="flex:1;color:#1a1a2e">Q2 外展活動</div><span class="tag t-blue">04/24 到期</span><div style="font-size:10px;color:#9ca3af;margin-left:6px">雯琪、憶雯</div></div>
+        <div class="tr"><div style="flex:1;color:#1a1a2e">詩惟KEVIn短影音合作</div><span class="tag t-blue">04/30 到期</span><div style="font-size:10px;color:#9ca3af;margin-left:6px">雯琪、詩惟</div></div>
+        <div class="tr"><div style="flex:1;color:#1a1a2e">AI 行銷週報自動化</div><span class="tag t-blue">04/30 到期</span><div style="font-size:10px;color:#9ca3af;margin-left:6px">雯琪</div></div>
+      </div>
+      <div class="sec-l">類別進度</div>
+      <div style="position:relative;height:165px"><canvas id="cTask" role="img" aria-label="類別進度堆疊長條圖">類別進度</canvas></div>
+    </div>
+
+  </div>
+</div>
+</div>
+
+<!-- Upload overlay -->
+<div class="uoverlay" id="uModal">
+  <div class="mbox">
+    <div style="font-size:14px;font-weight:700;color:#1a1a2e;margin-bottom:12px">上傳資料更新</div>
+    <div class="drop" onclick="document.getElementById('fIn').click()">
+      <input type="file" id="fIn" multiple accept=".xlsx,.csv" style="display:none" onchange="handleF(this.files)">
+      <div style="font-size:12px;color:#6b7280">點擊或拖曳檔案至此</div>
+      <div style="font-size:10px;color:#9ca3af;margin-top:3px">.xlsx / .csv ｜多檔同時上傳</div>
+    </div>
+    <div id="fList" style="margin-bottom:10px"></div>
+    <div style="display:flex;gap:6px;justify-content:flex-end">
+      <button class="btn-s" onclick="closeU()">取消</button>
+      <button class="btn-p" onclick="confirmU()">確認更新</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const pgIds=['overview','ads','visitors','fanpage','cpv','events','tasks'];
+const pgTitles={overview:'總覽',ads:'Google Ads 成效',visitors:'來店客戶分析',fanpage:'據點粉專',cpv:'單位來店成本',events:'活動成效',tasks:'工作進度'};
+const sbItems=document.querySelectorAll('.sb-item');
+function sbByPg(id){return sbItems[pgIds.indexOf(id)]||null}
+function gp(id,el){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('pg-'+id).classList.add('active');
+  sbItems.forEach(s=>s.classList.remove('active'));
+  if(el)el.classList.add('active');
+  document.getElementById('pgTitle').textContent=pgTitles[id]||'';
+}
+function openU(){document.getElementById('uModal').classList.add('open')}
+function closeU(){document.getElementById('uModal').classList.remove('open')}
+document.getElementById('uModal').addEventListener('click',function(e){if(e.target===this)closeU()})
+function handleF(files){
+  const l=document.getElementById('fList');l.innerHTML='';
+  Array.from(files).forEach(f=>{
+    const d=document.createElement('div');
+    d.style.cssText='display:flex;justify-content:space-between;font-size:11px;padding:4px 0;border-bottom:1px solid rgba(0,0,0,.06)';
+    d.innerHTML='<span style="color:#1a1a2e">'+f.name+'</span><span style="color:#16a34a">已選取</span>';
+    l.appendChild(d);
+  });
+}
+function confirmU(){
+  const n=new Date();
+  document.getElementById('updTxt').textContent='資料更新：'+n.getFullYear()+'-'+String(n.getMonth()+1).padStart(2,'0')+'-'+String(n.getDate()).padStart(2,'0')+' '+String(n.getHours()).padStart(2,'0')+':'+String(n.getMinutes()).padStart(2,'0');
+  closeU();
+}
+function toggleDD(){document.getElementById('mDD').classList.toggle('open')}
+function toggleM(b){if(b.classList.contains('dis'))return;b.classList.toggle('sel')}
+function selAll(){document.querySelectorAll('.m-btn:not(.dis)').forEach(b=>b.classList.add('sel'))}
+let selMonths=[1,2,3];
+function applyM(){
+  selMonths=[];
+  document.querySelectorAll('.m-btn.sel:not(.dis)').forEach(b=>selMonths.push(parseInt(b.dataset.m)));
+  if(!selMonths.length)selMonths=[1,2,3];
+  const lbl=document.getElementById('mLabel'),pill=document.getElementById('mPill');
+  if(selMonths.length===3){lbl.textContent='2026 全部';pill.classList.remove('am');}
+  else{lbl.textContent='2026 '+selMonths.map(m=>m+'月').join('、');pill.classList.add('am');}
+  document.getElementById('mDD').classList.remove('open');
+  buildCharts();
+}
+const allData={
+  1:{total:249,uniq:165,src:[70,17,35,28,24,20,15,12,8,5],dist:[130,10,15,18,0,8,5,8],consid:[90,80,60,55,30,20,13,12,5],m:[249,0,0]},
+  2:{total:94,uniq:69,src:[18,20,10,12,14,10,8,5,4,2],dist:[25,18,12,8,14,9,8,6],consid:[55,45,35,30,15,12,8,8,3],m:[0,94,0]},
+  3:{total:124,uniq:94,src:[21,33,16,15,12,12,7,5,3,3],dist:[35,28,15,11,8,7,9,7],consid:[88,72,55,54,29,18,12,12,4],m:[0,0,124]}
+};
+const sLabels=['電視節目/廣告','未填','FB/IG/TikTok','親友','路過','電視牆','YT','路上看到','其他','傳單'];
+const dLabels=['中壢區','桃園區','楊梅區','平鎮區','外縣市','蘆竹區','八德區','觀音區'];
+const cLabels=['空間','價格','安全配備','外觀','駕馭性能','油耗','妥善率','保修成本','品牌形象'];
+const sColors=['#e63946','#9ca3af','#1d4ed8','#f59e0b','#6b7280','#7c3aed','#16a34a','#0891b2','#d97706','#ec4899'];
+const tc='#9ca3af',gc='rgba(0,0,0,.05)';
+const def={responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{titleFont:{size:10},bodyFont:{size:10}}}};
+let charts={};
+function dc(id){if(charts[id]){charts[id].destroy();delete charts[id];}}
+function getAgg(){
+  const src=new Array(10).fill(0),dist=new Array(8).fill(0),consid=new Array(9).fill(0),m=[0,0,0];
+  let tot=0,uniq=0;
+  selMonths.forEach(mo=>{const d=allData[mo];tot+=d.total;uniq+=d.uniq;d.src.forEach((v,i)=>src[i]+=v);d.dist.forEach((v,i)=>dist[i]+=v);d.consid.forEach((v,i)=>consid[i]+=v);m[mo-1]=d.m[mo-1];});
+  return{src,dist,consid,m,total:tot,uniq};
+}
+function buildCharts(){
+  const agg=getAgg();
+  ['cSrc','cDist','cConsid','cMon','cCPV','cTask','cScore'].forEach(dc);
+  charts.cSrc=new Chart(document.getElementById('cSrc'),{type:'doughnut',data:{labels:sLabels,datasets:[{data:agg.src,backgroundColor:sColors,borderWidth:0}]},options:{...def,cutout:'58%'}});
+  charts.cDist=new Chart(document.getElementById('cDist'),{type:'bar',data:{labels:dLabels,datasets:[{data:agg.dist,backgroundColor:'#e63946',borderWidth:0,borderRadius:4}]},options:{...def,scales:{x:{ticks:{color:tc,font:{size:9}},grid:{display:false}},y:{ticks:{color:tc,font:{size:9}},grid:{color:gc}}}}});
+  charts.cConsid=new Chart(document.getElementById('cConsid'),{type:'bar',data:{labels:cLabels,datasets:[{data:agg.consid,backgroundColor:'#1d3557',borderWidth:0,borderRadius:3}]},options:{...def,indexAxis:'y',scales:{x:{ticks:{color:tc,font:{size:9}},grid:{color:gc}},y:{ticks:{color:tc,font:{size:9}},grid:{display:false}}}}});
+  charts.cMon=new Chart(document.getElementById('cMon'),{type:'line',data:{labels:['1月','2月','3月'],datasets:[{data:agg.m,borderColor:'#e63946',backgroundColor:'rgba(230,57,70,.08)',fill:true,tension:.35,pointRadius:4,pointBackgroundColor:'#e63946'}]},options:{...def,scales:{x:{ticks:{color:tc,font:{size:9}},grid:{display:false}},y:{ticks:{color:tc,font:{size:9}},grid:{color:gc}}}}});
+  charts.cScore=new Chart(document.getElementById('cScore'),{type:'bar',data:{labels:['中壢所','八德所','桃園所'],datasets:[{data:[160,90,90],backgroundColor:['#e63946','#16a34a','#1d4ed8'],borderWidth:0,borderRadius:6,barThickness:44}]},options:{...def,scales:{x:{ticks:{color:tc,font:{size:10}},grid:{display:false}},y:{min:0,max:330,ticks:{color:tc,font:{size:9}},grid:{color:gc}}},plugins:{...def.plugins,annotation:{annotations:{tl:{type:'line',yMin:250,yMax:250,borderColor:'#f59e0b',borderWidth:2,borderDash:[6,4]}}}}}});
+  charts.cCPV=new Chart(document.getElementById('cCPV'),{type:'bar',data:{labels:sLabels.slice(0,9),datasets:[{data:agg.src.slice(0,9).map(v=>+(v/agg.total*100).toFixed(1)),backgroundColor:sColors,borderWidth:0,borderRadius:4}]},options:{...def,scales:{x:{ticks:{color:tc,font:{size:9},maxRotation:40},grid:{display:false}},y:{ticks:{color:tc,font:{size:9},callback:v=>v+'%'},grid:{color:gc}}}}});
+  charts.cTask=new Chart(document.getElementById('cTask'),{type:'bar',data:{labels:['粉專','Google','外媒','電視牆','會員','外展','AI'],datasets:[{label:'完成',data:[2,1,0,1,1,0,0],backgroundColor:'#16a34a',borderWidth:0,borderRadius:3},{label:'進行中',data:[0,0,1,1,0,1,2],backgroundColor:'#1d4ed8',borderWidth:0,borderRadius:3}]},options:{...def,plugins:{legend:{display:true,labels:{color:tc,font:{size:10},boxWidth:9,padding:10}},tooltip:{titleFont:{size:10},bodyFont:{size:10}}},scales:{x:{stacked:true,ticks:{color:tc,font:{size:9}},grid:{display:false}},y:{stacked:true,ticks:{color:tc,font:{size:9},stepSize:1},grid:{color:gc}}}}});
+  document.getElementById('vTot').textContent=agg.total;
+  document.getElementById('vUniq').textContent=agg.uniq;
+  const ti=agg.src.indexOf(Math.max(...agg.src));
+  document.getElementById('vTop').textContent=agg.src[ti]+'次（'+Math.round(agg.src[ti]/agg.total*100)+'%）';
+  document.getElementById('visRange').textContent='2026 '+selMonths.join('、')+'月';
+  document.getElementById('visTag').textContent=agg.total+' 人次';
+}
+function calcCPV(){
+  const rows=[
+    {inp:'iGoogle',res:'cpvGoogle',vis:null,rEl:'rGoogle'},
+    {inp:'iFB',res:'cpvFB',vis:61,rEl:'rFB'},
+    {inp:'iTV',res:'cpvTV',vis:42,rEl:'rTV'},
+    {inp:'iTVs',res:'cpvTVs',vis:109,rEl:'rTVs'},
+    {inp:'iYT',res:null,vis:30,rEl:'rYT'}
+  ];
+  let totalFee=0,totalVis=0,totalFeeForCPV=0;
+  rows.forEach(r=>{
+    const fee=parseFloat(document.getElementById(r.inp).value)||0;
+    totalFee+=fee;
+    const el=document.getElementById(r.rEl);
+    if(r.vis&&fee>0){const cpv=Math.round(fee/r.vis);el.textContent='$'+cpv;totalFeeForCPV+=fee;totalVis+=r.vis;}
+    else{el.textContent='—';}
+    if(r.res)document.getElementById(r.res).textContent=fee>0&&r.vis?'$'+Math.round(fee/r.vis):'—';
+  });
+  document.getElementById('totalBudget').textContent='$'+totalFee.toLocaleString();
+  document.getElementById('totalCPV').textContent=totalVis>0?'$'+Math.round(totalFeeForCPV/totalVis):'—';
+}
+buildCharts();
+</script>
+</body>
+</html>
