@@ -301,8 +301,9 @@ body{background:linear-gradient(135deg,#e8eaf6 0%,#fce4ec 40%,#e0f2f1 100%);min-
                 <th style="padding:6px 8px;text-align:right;color:#9ca3af;font-weight:600">中壢 CTR</th>
                 <th style="padding:6px 8px;text-align:right;color:#9ca3af;font-weight:600">總費用</th>
                 <th style="padding:6px 8px;text-align:right;color:#9ca3af;font-weight:600">總點擊</th>
+                <th style="padding:6px 8px;text-align:right;color:#9ca3af;font-weight:600">總CTR</th>
               </tr></thead>
-              <tbody id="histDetailBody"><tr><td colspan="6" style="text-align:center;padding:16px;color:#9ca3af">載入中...</td></tr></tbody>
+              <tbody id="histDetailBody"><tr><td colspan="7" style="text-align:center;padding:16px;color:#9ca3af">載入中...</td></tr></tbody>
             </table>
           </div>
         </div>
@@ -412,11 +413,12 @@ function switchSubTab(id,el){
       buildMonthSelector();
       renderHistoryCharts();
     } else {
-      document.getElementById('monthCheckGrid').textContent='數據載入中，請稍候再點選...';
+      document.getElementById('monthCheckGrid').textContent='數據載入中，請稍候再切換...';
+      // 若數據尚未載入則觸發
+      if(!adsLoaded){adsLoaded=true;loadAdsData();}
     }
   }
 }
-  
 function triggerAdsLoad(){if(!adsLoaded){adsLoaded=true;loadAdsData();}}
 function openU(){document.getElementById('uModal').classList.add('open')}
 function closeU(){document.getElementById('uModal').classList.remove('open')}
@@ -452,14 +454,12 @@ function loadAdsData(){
       }
       if(data.ai&&data.ai[1])renderAiAdvice(data.ai);
       if(data.history&&data.history.length>1){
-  histData=data.history;
-  // 如果目前在歷史趨勢頁，直接渲染
-  if(document.getElementById('sub-history').classList.contains('active')){
-    buildMonthSelector();
-    renderHistoryCharts();
-  }
-}
-      
+        histData=data.history;
+        buildMonthSelector();
+        if(document.getElementById('sub-history').classList.contains('active')){
+          renderHistoryCharts();
+        }
+      }
     })
     .catch(function(e){s('adsUpdateTime','載入失敗');console.error(e);});
 }
@@ -542,7 +542,7 @@ function renderHistoryCharts(){
   selMonths.forEach(function(ym){
     var m=monthMap[ym];
     function ctr(o){return o.imp>0?(o.clk/o.imp*100).toFixed(2)+'%':'—';}
-    html+='<tr style="border-bottom:1px solid rgba(0,0,0,.05)"><td style="padding:6px 8px;font-weight:600">'+ym.replace('-','/')+'</td><td style="padding:6px 8px;text-align:right;color:#e63946">'+ctr(m.ty)+'</td><td style="padding:6px 8px;text-align:right;color:#1d4ed8">'+ctr(m.bd)+'</td><td style="padding:6px 8px;text-align:right;color:#16a34a">'+ctr(m.zl)+'</td><td style="padding:6px 8px;text-align:right">NT$'+Math.round(m.total.cost)+'</td><td style="padding:6px 8px;text-align:right">'+m.total.clk+'</td></tr>';
+    html+='<tr style="border-bottom:1px solid rgba(0,0,0,.05)"><td style="padding:6px 8px;font-weight:600">'+ym.replace('-','/')+'</td><td style="padding:6px 8px;text-align:right;color:#e63946">'+ctr(m.ty)+'</td><td style="padding:6px 8px;text-align:right;color:#1d4ed8">'+ctr(m.bd)+'</td><td style="padding:6px 8px;text-align:right;color:#16a34a">'+ctr(m.zl)+'</td><td style="padding:6px 8px;text-align:right">NT$'+Math.round(m.total.cost)+'</td><td style="padding:6px 8px;text-align:right">'+m.total.clk+'</td><td style="padding:6px 8px;text-align:right;font-weight:600">'+(m.total.imp>0?(m.total.clk/m.total.imp*100).toFixed(2)+'%':'—')+'</td></tr>';
   });
   document.getElementById('histDetailBody').innerHTML=html||'<tr><td colspan="6" style="text-align:center;padding:16px;color:#9ca3af">無數據</td></tr>';
 }
