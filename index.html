@@ -416,6 +416,7 @@ function switchSubTab(id,el){
     }
   }
 }
+  
 function triggerAdsLoad(){if(!adsLoaded){adsLoaded=true;loadAdsData();}}
 function openU(){document.getElementById('uModal').classList.add('open')}
 function closeU(){document.getElementById('uModal').classList.remove('open')}
@@ -458,6 +459,7 @@ function loadAdsData(){
     renderHistoryCharts();
   }
 }
+      
     })
     .catch(function(e){s('adsUpdateTime','載入失敗');console.error(e);});
 }
