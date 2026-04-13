@@ -198,17 +198,96 @@ body{background:linear-gradient(135deg,#e8eaf6 0%,#fce4ec 40%,#e0f2f1 100%);min-
       </div>
     </div>
 
-    <!-- Google Ads -->
-    <div id="pg-ads" class="page">
-      <div class="dh"><button class="back" onclick="gp('overview',sbByPg('overview'))">← 總覽</button><span class="dtitle">Google Ads 成效</span><span class="tag t-gray" style="margin-left:4px">待串接</span></div>
-      <div class="g4"><div class="stat"><div class="sl">曝光次數</div><div class="sv">—</div></div><div class="stat"><div class="sl">點擊數</div><div class="sv">—</div></div><div class="stat"><div class="sl">CTR</div><div class="sv">—</div></div><div class="stat"><div class="sl">平均 CPC</div><div class="sv">—</div></div></div>
-      <div class="sec-l">預算使用</div>
-      <div class="g2">
-        <div class="card"><div style="font-size:11px;color:#6b7280;margin-bottom:5px">Google Ads 月預算</div><div style="font-size:22px;font-weight:700;color:#1a1a2e">$5,400</div><div class="dv"></div><div class="br"><div class="brl">已使用</div><div class="brt"><div class="brf" style="width:0%;background:#e63946"></div></div><div class="brv">—</div></div><div class="br"><div class="brl">剩餘</div><div class="brt"><div class="brf" style="width:100%;background:#d1d5db"></div></div><div class="brv">$5,400</div></div></div>
-        <div class="card"><div style="font-size:11px;color:#6b7280;margin-bottom:5px">FB Ads 月預算</div><div style="font-size:22px;font-weight:700;color:#1a1a2e">$2,700</div><div class="dv"></div><div class="br"><div class="brl">已使用</div><div class="brt"><div class="brf" style="width:0%;background:#7c3aed"></div></div><div class="brv">—</div></div><div class="br"><div class="brl">剩餘</div><div class="brt"><div class="brf" style="width:100%;background:#d1d5db"></div></div><div class="brv">$2,700</div></div></div>
+   <!-- Google Ads -->
+<div id="pg-ads" class="page">
+  <div class="dh">
+    <button class="back" onclick="gp('overview',sbByPg('overview'))">← 總覽</button>
+    <span class="dtitle">Google Ads 成效</span>
+    <span class="tag t-green" id="adsUpdateTime" style="margin-left:4px">載入中...</span>
+  </div>
+
+  <div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap">
+    <button class="btn-up" id="tabY" onclick="switchAdsTab('Y')" style="background:rgba(230,57,70,.1);color:#e63946;border-color:rgba(230,57,70,.3)">昨日</button>
+    <button class="btn-up" id="tabW" onclick="switchAdsTab('W')">本週</button>
+    <button class="btn-up" id="tabM" onclick="switchAdsTab('M')">本月</button>
+  </div>
+
+  <div class="g4" style="margin-bottom:12px">
+    <div class="stat"><div class="sl">三所總曝光</div><div class="sv" id="adsTotalImp">—</div></div>
+    <div class="stat"><div class="sl">三所總點擊</div><div class="sv" id="adsTotalClk">—</div></div>
+    <div class="stat"><div class="sl">整體 CTR</div><div class="sv" id="adsTotalCtr">—</div></div>
+    <div class="stat"><div class="sl">三所總費用</div><div class="sv" id="adsTotalCost">—</div></div>
+  </div>
+
+  <div class="sec-l">各據點成效</div>
+  <div class="g3" style="margin-bottom:12px">
+    <div class="card">
+      <div style="display:flex;align-items:center;gap:5px;margin-bottom:8px">
+        <div class="sdot" style="background:#e63946"></div>
+        <span style="font-size:12px;font-weight:600;color:#1a1a2e">桃園所</span>
       </div>
-      <div class="blank">串接 Google Ads API 或上傳報表後自動顯示趨勢圖表</div>
+      <div class="stat" style="margin-bottom:5px"><div class="sl">曝光</div><div class="sv" id="ads-ty-imp">—</div></div>
+      <div class="stat" style="margin-bottom:5px"><div class="sl">點擊</div><div class="sv" id="ads-ty-clk">—</div></div>
+      <div class="stat" style="margin-bottom:5px"><div class="sl">CTR</div><div class="sv" id="ads-ty-ctr">—</div></div>
+      <div class="stat"><div class="sl">費用</div><div class="sv" id="ads-ty-cost">—</div></div>
     </div>
+    <div class="card">
+      <div style="display:flex;align-items:center;gap:5px;margin-bottom:8px">
+        <div class="sdot" style="background:#1d4ed8"></div>
+        <span style="font-size:12px;font-weight:600;color:#1a1a2e">八德所</span>
+      </div>
+      <div class="stat" style="margin-bottom:5px"><div class="sl">曝光</div><div class="sv" id="ads-bd-imp">—</div></div>
+      <div class="stat" style="margin-bottom:5px"><div class="sl">點擊</div><div class="sv" id="ads-bd-clk">—</div></div>
+      <div class="stat" style="margin-bottom:5px"><div class="sl">CTR</div><div class="sv" id="ads-bd-ctr">—</div></div>
+      <div class="stat"><div class="sl">費用</div><div class="sv" id="ads-bd-cost">—</div></div>
+    </div>
+    <div class="card">
+      <div style="display:flex;align-items:center;gap:5px;margin-bottom:8px">
+        <div class="sdot" style="background:#16a34a"></div>
+        <span style="font-size:12px;font-weight:600;color:#1a1a2e">中壢所</span>
+      </div>
+      <div class="stat" style="margin-bottom:5px"><div class="sl">曝光</div><div class="sv" id="ads-zl-imp">—</div></div>
+      <div class="stat" style="margin-bottom:5px"><div class="sl">點擊</div><div class="sv" id="ads-zl-clk">—</div></div>
+      <div class="stat" style="margin-bottom:5px"><div class="sl">CTR</div><div class="sv" id="ads-zl-ctr">—</div></div>
+      <div class="stat"><div class="sl">費用</div><div class="sv" id="ads-zl-cost">—</div></div>
+    </div>
+  </div>
+
+  <div class="sec-l">CTR 三所比較</div>
+  <div class="card" style="margin-bottom:12px">
+    <div style="position:relative;height:180px">
+      <canvas id="cAds" role="img" aria-label="三所CTR比較長條圖">三所CTR比較</canvas>
+    </div>
+  </div>
+
+  <div class="sec-l">AI 分析建議</div>
+  <div class="card" id="aiAdvice" style="font-size:12px;color:#6b7280;line-height:1.8;white-space:pre-wrap">載入中...</div>
+
+  <div class="sec-l">預算使用</div>
+  <div class="g2">
+    <div class="card">
+      <div style="font-size:11px;color:#6b7280;margin-bottom:5px">Google Ads 月預算</div>
+      <div style="font-size:22px;font-weight:700;color:#1a1a2e">$5,400</div>
+      <div class="dv"></div>
+      <div class="br">
+        <div class="brl">已使用</div>
+        <div class="brt"><div class="brf" id="budgetBar" style="width:0%;background:#e63946"></div></div>
+        <div class="brv" id="budgetUsed">—</div>
+      </div>
+      <div class="br">
+        <div class="brl">剩餘</div>
+        <div class="brt"><div class="brf" id="budgetRemBar" style="width:100%;background:#d1d5db"></div></div>
+        <div class="brv" id="budgetRem">$5,400</div>
+      </div>
+    </div>
+    <div class="card">
+      <div style="font-size:11px;color:#6b7280;margin-bottom:5px">本月每日平均費用</div>
+      <div style="font-size:22px;font-weight:700;color:#1a1a2e" id="avgDailyCost">—</div>
+      <div class="dv"></div>
+      <div style="font-size:11px;color:#9ca3af">三所合計 / 本月天數</div>
+    </div>
+  </div>
+</div>
 
     <!-- 來店分析 -->
     <div id="pg-visitors" class="page">
@@ -365,6 +444,145 @@ function applyM(){
   if(selMonths.length===3){lbl.textContent='2026 全部';pill.classList.remove('am');}
   else{lbl.textContent='2026 '+selMonths.map(m=>m+'月').join('、');pill.classList.add('am');}
   document.getElementById('mDD').classList.remove('open');
+  // ===== Google Ads 試算表讀取 =====
+var SHEET_ID = '1s9AjGai-Hts-HXA83CPQLTIO65Sv-HY6E_b6g4aB63o';
+var adsData = null;
+var currentTab = 'Y';
+
+function loadAdsData() {
+  var url = 'https://docs.google.com/spreadsheets/d/' + SHEET_ID + '/gviz/tq?sheet=最新數據&tqx=out:json';
+  fetch(url)
+    .then(function(r){ return r.text(); })
+    .then(function(text){
+      var json = JSON.parse(text.substring(47).slice(0,-2));
+      var rows = json.table.rows;
+      if(!rows || rows.length < 2){ return; }
+      
+      adsData = {};
+      rows.slice(1).forEach(function(row){
+        var name = row.c[1] ? row.c[1].v : '';
+        var key = '';
+        if(name.indexOf('桃園') > -1) key = 'ty';
+        else if(name.indexOf('八德') > -1) key = 'bd';
+        else if(name.indexOf('中壢') > -1) key = 'zl';
+        else if(name.indexOf('合計') > -1) key = 'total';
+        if(!key) return;
+        
+        adsData[key] = {
+          updateTime: row.c[0] ? row.c[0].v : '',
+          Y: { imp: row.c[2]?row.c[2].v:0, clk: row.c[3]?row.c[3].v:0, ctr: row.c[4]?row.c[4].v:0, cost: row.c[6]?row.c[6].v:0 },
+          W: { imp: row.c[8]?row.c[8].v:0, clk: row.c[9]?row.c[9].v:0, ctr: row.c[10]?row.c[10].v:0, cost: row.c[11]?row.c[11].v:0 },
+          M: { imp: row.c[12]?row.c[12].v:0, clk: row.c[13]?row.c[13].v:0, ctr: row.c[14]?row.c[14].v:0, cost: row.c[15]?row.c[15].v:0 }
+        };
+      });
+      
+      renderAdsData('Y');
+      loadAiAdvice();
+      
+      var t = adsData.total ? adsData.total.updateTime : '';
+      document.getElementById('adsUpdateTime').textContent = t ? '更新：' + t : '已載入';
+    })
+    .catch(function(e){ 
+      document.getElementById('adsUpdateTime').textContent = '載入失敗';
+      console.log(e);
+    });
+}
+
+function loadAiAdvice() {
+  var url = 'https://docs.google.com/spreadsheets/d/' + SHEET_ID + '/gviz/tq?sheet=AI建議&tqx=out:json';
+  fetch(url)
+    .then(function(r){ return r.text(); })
+    .then(function(text){
+      var json = JSON.parse(text.substring(47).slice(0,-2));
+      var rows = json.table.rows;
+      if(!rows || rows.length === 0) return;
+      var last = rows[rows.length - 1];
+      var advice = last.c[1] ? last.c[1].v : '暫無建議';
+      document.getElementById('aiAdvice').textContent = advice;
+    })
+    .catch(function(){ document.getElementById('aiAdvice').textContent = '建議載入失敗'; });
+}
+
+function renderAdsData(tab) {
+  currentTab = tab;
+  if(!adsData) return;
+  
+  var sites = ['ty','bd','zl'];
+  var names = {ty:'桃園所', bd:'八德所', zl:'中壢所'};
+  var ctrVals = [];
+  var labels = [];
+  
+  sites.forEach(function(k){
+    var d = adsData[k] ? adsData[k][tab] : null;
+    document.getElementById('ads-'+k+'-imp').textContent = d ? d.imp.toLocaleString() : '—';
+    document.getElementById('ads-'+k+'-clk').textContent = d ? d.clk.toLocaleString() : '—';
+    document.getElementById('ads-'+k+'-ctr').textContent = d ? d.ctr.toFixed(2)+'%' : '—';
+    document.getElementById('ads-'+k+'-cost').textContent = d ? 'NT$'+Math.round(d.cost) : '—';
+    ctrVals.push(d ? d.ctr : 0);
+    labels.push(names[k]);
+  });
+  
+  var tot = adsData.total ? adsData.total[tab] : null;
+  document.getElementById('adsTotalImp').textContent = tot ? tot.imp.toLocaleString() : '—';
+  document.getElementById('adsTotalClk').textContent = tot ? tot.clk.toLocaleString() : '—';
+  document.getElementById('adsTotalCtr').textContent = tot ? tot.ctr.toFixed(2)+'%' : '—';
+  document.getElementById('adsTotalCost').textContent = tot ? 'NT$'+Math.round(tot.cost) : '—';
+  
+  // 更新預算（用本月數據）
+  if(tab === 'M' || adsData.total){
+    var mCost = adsData.total ? Math.round(adsData.total.M.cost) : 0;
+    var budget = 5400;
+    var pct = Math.min(Math.round(mCost/budget*100), 100);
+    document.getElementById('budgetUsed').textContent = 'NT$'+mCost;
+    document.getElementById('budgetRem').textContent = 'NT$'+(budget-mCost);
+    document.getElementById('budgetBar').style.width = pct+'%';
+    document.getElementById('budgetRemBar').style.width = (100-pct)+'%';
+    var days = new Date().getDate();
+    document.getElementById('avgDailyCost').textContent = 'NT$'+Math.round(mCost/days);
+  }
+  
+  // 更新圖表
+  dc('cAds');
+  charts.cAds = new Chart(document.getElementById('cAds'), {
+    type: 'bar',
+    data: {
+      labels: labels,
+      datasets: [{
+        data: ctrVals,
+        backgroundColor: ['#e63946','#1d4ed8','#16a34a'],
+        borderWidth: 0,
+        borderRadius: 6,
+        barThickness: 50
+      }]
+    },
+    options: {
+      ...def,
+      scales: {
+        x: { ticks: { color: tc, font: { size: 11 } }, grid: { display: false } },
+        y: { ticks: { color: tc, font: { size: 10 }, callback: function(v){ return v+'%'; } }, grid: { color: gc } }
+      }
+    }
+  });
+}
+
+function switchAdsTab(tab) {
+  ['Y','W','M'].forEach(function(t){
+    var btn = document.getElementById('tab'+t);
+    if(t === tab){
+      btn.style.background = 'rgba(230,57,70,.1)';
+      btn.style.color = '#e63946';
+      btn.style.borderColor = 'rgba(230,57,70,.3)';
+    } else {
+      btn.style.background = 'rgba(255,255,255,.65)';
+      btn.style.color = '#6b7280';
+      btn.style.borderColor = 'rgba(255,255,255,.9)';
+    }
+  });
+  renderAdsData(tab);
+}
+
+loadAdsData();
+// ===== END Google Ads =====
   buildCharts();
 }
 const allData={
