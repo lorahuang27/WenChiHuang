@@ -445,7 +445,32 @@ function loadAdsData(){
         }
       }
       // 處理AI建議
-      if(data.ai&&data.ai[1]) renderAiAdvice(data.ai);
+      if(data.ai&&data.ai[1]) function renderAiAdvice(aiRow){
+  var el=document.getElementById('aiList'),dateEl=document.getElementById('aiDate');
+  if(!aiRow||!aiRow[1]){el.innerHTML='<li><div class="ai-icon ai-warn">!</div><span>暫無AI建議</span></li>';return;}
+  var raw=String(aiRow[1]);
+  dateEl.textContent=aiRow[0]?String(aiRow[0]):'';
+  var html='',count=0;
+  var blocks={'整體評估':'ok','異常警示':'bad','今日操作建議':'warn'};
+  var currentBlock='ok';
+  raw.split('\n').forEach(function(line){
+    if(count>=4)return;
+    var t=line.trim();
+    if(!t||t.length<3)return;
+    // 偵測區塊標題
+    Object.keys(blocks).forEach(function(k){if(t.indexOf(k)>-1)currentBlock=blocks[k];});
+    // 跳過標題行
+    if(t.startsWith('【')&&t.indexOf('】')>-1)return;
+    // 清除前綴符號
+    t=t.replace(/^[#*\-•·\d\.\)]+\s*/,'').trim();
+    if(t.length<5)return;
+    var icon=currentBlock==='ok'?'✓':currentBlock==='bad'?'!':'→';
+    html+='<li><div class="ai-icon ai-'+currentBlock+'">'+icon+'</div><span>'+t+'</span></li>';
+    count++;
+  });
+  el.innerHTML=html||'<li><div class="ai-icon ai-ok">✓</div><span>'+raw.substring(0,150)+'</span></li>';
+}
+      ;
       // 處理歷史數據
       if(data.history&&data.history.length>1){
         histData=data.history;
