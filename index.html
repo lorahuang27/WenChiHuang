@@ -24,7 +24,6 @@ body{background:linear-gradient(135deg,#e8eaf6 0%,#fce4ec 40%,#e0f2f1 100%);min-
 .topbar{display:flex;align-items:center;justify-content:space-between;padding:16px 22px 0;flex-wrap:wrap;gap:8px}
 .tb-left{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
 .page-title{font-size:17px;font-weight:700;color:#1a1a2e}
-.filter-pill{display:flex;align-items:center;gap:4px;padding:5px 12px;background:rgba(255,255,255,.65);border:1px solid rgba(255,255,255,.9);border-radius:20px;font-size:11px;color:#6b7280;cursor:pointer;user-select:none}
 .tb-right{display:flex;align-items:center;gap:10px}
 .upd-txt{font-size:10px;color:#9ca3af}
 .btn-up{display:flex;align-items:center;gap:5px;padding:5px 11px;background:rgba(255,255,255,.65);border:1px solid rgba(255,255,255,.9);border-radius:8px;font-size:11px;color:#6b7280;cursor:pointer}
@@ -100,26 +99,31 @@ body{background:linear-gradient(135deg,#e8eaf6 0%,#fce4ec 40%,#e0f2f1 100%);min-
 .metric-good{color:#16a34a;font-weight:700}
 .metric-warn{color:#f59e0b;font-weight:700}
 .metric-bad{color:#e63946;font-weight:700}
-.chart-sel{display:flex;gap:6px;margin-bottom:8px;flex-wrap:wrap}
+.chart-sel{display:flex;gap:6px;flex-wrap:wrap}
 .cs-btn{padding:3px 10px;border-radius:6px;border:1px solid rgba(0,0,0,.1);background:rgba(255,255,255,.6);font-size:10px;color:#6b7280;cursor:pointer}
 .cs-btn.active{background:#1a1a2e;color:#fff;border-color:#1a1a2e}
 .ai-list{list-style:none;padding:0}
-.ai-list li{display:flex;gap:8px;padding:6px 0;border-bottom:1px solid rgba(0,0,0,.05);font-size:12px;color:#6b7280;line-height:1.5}
+.ai-list li{display:flex;gap:8px;padding:7px 0;border-bottom:1px solid rgba(0,0,0,.05);font-size:12px;color:#4b5563;line-height:1.6}
 .ai-list li:last-child{border-bottom:none}
-.ai-icon{width:18px;height:18px;border-radius:5px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:10px;margin-top:1px}
+.ai-icon{width:20px;height:20px;border-radius:6px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;margin-top:1px}
 .ai-ok{background:rgba(22,163,74,.1);color:#16a34a}
-.ai-warn{background:rgba(245,158,11,.1);color:#f59e0b}
+.ai-warn{background:rgba(245,158,11,.12);color:#d97706}
 .ai-bad{background:rgba(230,57,70,.1);color:#e63946}
 .budget-mini{background:rgba(255,255,255,.55);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,.8);border-radius:12px;padding:14px 16px}
 .budget-num{font-size:22px;font-weight:700;color:#1a1a2e;margin:4px 0 2px}
 .budget-bar-wrap{background:rgba(0,0,0,.07);border-radius:4px;height:8px;margin:8px 0 4px;overflow:hidden}
 .budget-bar-fill{height:8px;border-radius:4px;background:linear-gradient(90deg,#16a34a,#e63946);transition:width .6s ease}
 .predict-tag{font-size:10px;padding:2px 8px;border-radius:20px;background:rgba(230,57,70,.1);color:#e63946;margin-top:6px;display:inline-block}
-/* 歷史趨勢專用 */
-.month-check-grid{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
+/* 子頁籤 */
+.sub-tabs{display:flex;gap:4px;margin-bottom:14px;border-bottom:1px solid rgba(0,0,0,.08);padding-bottom:0}
+.sub-tab{padding:7px 14px;font-size:12px;color:#6b7280;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;transition:all .15s}
+.sub-tab.active{color:#e63946;border-bottom-color:#e63946;font-weight:600}
+.sub-page{display:none}
+.sub-page.active{display:block}
+/* 歷史趨勢 */
+.month-check-grid{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
 .mc-btn{padding:4px 10px;border-radius:6px;border:1px solid rgba(0,0,0,.1);background:rgba(255,255,255,.6);font-size:11px;color:#6b7280;cursor:pointer;transition:all .12s}
 .mc-btn.sel{background:#1a1a2e;color:#fff;border-color:#1a1a2e}
-.mc-btn.dis{color:#ccc;background:rgba(255,255,255,.3);cursor:default}
 .hist-kpi{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px}
 </style>
 </head>
@@ -130,7 +134,6 @@ body{background:linear-gradient(135deg,#e8eaf6 0%,#fce4ec 40%,#e0f2f1 100%);min-
   <div class="sb-section">主要</div>
   <div class="sb-item active" onclick="gp('overview',this)"><svg viewBox="0 0 14 14"><rect x="1" y="1" width="5" height="5" rx="1"/><rect x="8" y="1" width="5" height="5" rx="1"/><rect x="1" y="8" width="5" height="5" rx="1"/><rect x="8" y="8" width="5" height="5" rx="1"/></svg>總覽</div>
   <div class="sb-item" onclick="gp('ads',this);triggerAdsLoad()"><svg viewBox="0 0 14 14"><rect x="1" y="8" width="3" height="5" rx="1"/><rect x="5.5" y="5" width="3" height="8" rx="1"/><rect x="10" y="2" width="3" height="11" rx="1"/></svg>Google Ads</div>
-  <div class="sb-item" onclick="gp('history',this);triggerAdsLoad()"><svg viewBox="0 0 14 14"><circle cx="7" cy="7" r="5.5"/><path d="M7 4v3.5l2.5 1.5"/></svg>歷史趨勢</div>
   <div class="sb-item" onclick="gp('visitors',this)"><svg viewBox="0 0 14 14"><circle cx="5" cy="4" r="2"/><path d="M1 12c0-2.2 1.8-4 4-4s4 1.8 4 4"/><circle cx="11" cy="4" r="1.5"/><path d="M11 7.5c1.5.4 2.5 1.8 2.5 3.5"/></svg>來店分析</div>
   <div class="sb-item" onclick="gp('fanpage',this)"><svg viewBox="0 0 14 14"><path d="M7 2C4.8 2 3 3.6 3 5.6c0 3 4 6.4 4 6.4s4-3.4 4-6.4C11 3.6 9.2 2 7 2z"/></svg>據點粉專</div>
   <div class="sb-item" onclick="gp('cpv',this)"><svg viewBox="0 0 14 14"><circle cx="7" cy="7" r="5.5"/><path d="M7 4.5v5M5 5.5h3.5a1 1 0 010 3H5"/></svg>單位成本</div>
@@ -161,153 +164,147 @@ body{background:linear-gradient(135deg,#e8eaf6 0%,#fce4ec 40%,#e0f2f1 100%);min-
         <div class="kpi"><div class="kpi-l">工作完成率</div><div class="kpi-v">37%</div><div class="kpi-s">4 / 11 項完成</div></div>
       </div>
       <div class="mod-grid">
-        <div class="mod" onclick="gp('ads',sbByPg('ads'));triggerAdsLoad()"><div class="mod-ico" style="background:rgba(230,57,70,.12)"><svg width="15" height="15" viewBox="0 0 14 14" fill="none" stroke="#e63946" stroke-width="1.5"><rect x="1" y="8" width="3" height="5" rx="1"/><rect x="5.5" y="5" width="3" height="8" rx="1"/><rect x="10" y="2" width="3" height="11" rx="1"/></svg></div><div class="mod-t">Google Ads 成效</div><div class="mod-d">昨日/本週/本月 三所比較</div><div class="mod-ft"><span class="tag t-green">自動更新</span><span class="arr">→</span></div></div>
-        <div class="mod" onclick="gp('history',sbByPg('history'));triggerAdsLoad()"><div class="mod-ico" style="background:rgba(29,78,216,.1)"><svg width="15" height="15" viewBox="0 0 14 14" fill="none" stroke="#1d4ed8" stroke-width="1.5"><circle cx="7" cy="7" r="5.5"/><path d="M7 4v3.5l2.5 1.5"/></svg></div><div class="mod-t">歷史趨勢</div><div class="mod-d">自選月份範圍，比較三所長期變化</div><div class="mod-ft"><span class="tag t-blue">2025/8 起</span><span class="arr">→</span></div></div>
+        <div class="mod" onclick="gp('ads',sbByPg('ads'));triggerAdsLoad()"><div class="mod-ico" style="background:rgba(230,57,70,.12)"><svg width="15" height="15" viewBox="0 0 14 14" fill="none" stroke="#e63946" stroke-width="1.5"><rect x="1" y="8" width="3" height="5" rx="1"/><rect x="5.5" y="5" width="3" height="8" rx="1"/><rect x="10" y="2" width="3" height="11" rx="1"/></svg></div><div class="mod-t">Google Ads 成效</div><div class="mod-d">即時成效 + 歷史趨勢 + AI分析</div><div class="mod-ft"><span class="tag t-green">自動更新</span><span class="arr">→</span></div></div>
         <div class="mod" onclick="gp('visitors',sbByPg('visitors'))"><div class="mod-ico" style="background:rgba(22,163,74,.1)"><svg width="15" height="15" viewBox="0 0 14 14" fill="none" stroke="#16a34a" stroke-width="1.5"><circle cx="5" cy="4" r="2"/><path d="M1 12c0-2.2 1.8-4 4-4s4 1.8 4 4"/><circle cx="11" cy="4" r="1.5"/><path d="M11 7.5c1.5.4 2.5 1.8 2.5 3.5"/></svg></div><div class="mod-t">來店客戶分析</div><div class="mod-d">來源佔比、地區分布、轄區比</div><div class="mod-ft"><span class="tag t-green" id="visTag">467 人次</span><span class="arr">→</span></div></div>
         <div class="mod" onclick="gp('fanpage',sbByPg('fanpage'))"><div class="mod-ico" style="background:rgba(124,58,237,.1)"><svg width="15" height="15" viewBox="0 0 14 14" fill="none" stroke="#7c3aed" stroke-width="1.5"><path d="M7 2C4.8 2 3 3.6 3 5.6c0 3 4 6.4 4 6.4s4-3.4 4-6.4C11 3.6 9.2 2 7 2z"/></svg></div><div class="mod-t">據點粉專</div><div class="mod-d">計分、貼文、觸及</div><div class="mod-ft"><span class="tag t-blue">中壢 160 分</span><span class="arr">→</span></div></div>
-        <div class="mod" onclick="gp('events',sbByPg('events'))"><div class="mod-ico" style="background:rgba(15,110,86,.1)"><svg width="15" height="15" viewBox="0 0 14 14" fill="none" stroke="#0f6e56" stroke-width="1.5"><rect x="1" y="3" width="12" height="10" rx="1.5"/><path d="M4 2v2M10 2v2M1 6h12"/></svg></div><div class="mod-t">活動成效</div><div class="mod-d">外展 / 店頭前後來店對比</div><div class="mod-ft"><span class="tag t-amber">Q2 外展進行中</span><span class="arr">→</span></div></div>
+        <div class="mod" onclick="gp('cpv',sbByPg('cpv'))"><div class="mod-ico" style="background:rgba(180,83,9,.1)"><svg width="15" height="15" viewBox="0 0 14 14" fill="none" stroke="#b45309" stroke-width="1.5"><circle cx="7" cy="7" r="5.5"/><path d="M7 4.5v5M5 5.5h3.5a1 1 0 010 3H5"/></svg></div><div class="mod-t">單位來店成本 CPV</div><div class="mod-d">各渠道 CPV 即時計算</div><div class="mod-ft"><span class="tag t-amber">可即時計算</span><span class="arr">→</span></div></div>
+        <div class="mod" onclick="gp('events',sbByPg('events'))"><div class="mod-ico" style="background:rgba(15,110,86,.1)"><svg width="15" height="15" viewBox="0 0 14 14" fill="none" stroke="#0f6e56" stroke-width="1.5"><rect x="1" y="3" width="12" height="10" rx="1.5"/><path d="M4 2v2M10 2v2M1 6h12"/></svg></div><div class="mod-t">活動成效</div><div class="mod-d">外展前後來店對比</div><div class="mod-ft"><span class="tag t-amber">Q2 外展進行中</span><span class="arr">→</span></div></div>
         <div class="mod" onclick="gp('tasks',sbByPg('tasks'))"><div class="mod-ico" style="background:rgba(107,114,128,.1)"><svg width="15" height="15" viewBox="0 0 14 14" fill="none" stroke="#6b7280" stroke-width="1.5"><path d="M2 3.5h10M2 7h7M2 10.5h5"/><circle cx="11.5" cy="10.5" r="1.5"/></svg></div><div class="mod-t">工作進度</div><div class="mod-d">預警清單、類別進度</div><div class="mod-ft"><span class="tag t-green">完成率 37%</span><span class="arr">→</span></div></div>
       </div>
     </div>
 
-    <!-- Google Ads -->
+    <!-- Google Ads（含子頁籤） -->
     <div id="pg-ads" class="page">
       <div class="dh">
         <button class="back" onclick="gp('overview',sbByPg('overview'))">← 總覽</button>
         <span class="dtitle">Google Ads 成效</span>
-        <div style="display:flex;gap:6px;margin-left:4px">
+        <span class="tag t-green" id="adsUpdateTime" style="margin-left:auto">載入中...</span>
+      </div>
+
+      <!-- 子頁籤 -->
+      <div class="sub-tabs">
+        <div class="sub-tab active" onclick="switchSubTab('current',this)">即時成效</div>
+        <div class="sub-tab" onclick="switchSubTab('history',this)">歷史趨勢</div>
+      </div>
+
+      <!-- 即時成效子頁 -->
+      <div id="sub-current" class="sub-page active">
+        <div style="display:flex;gap:6px;margin-bottom:12px">
           <button class="tab-btn active" id="tabY" onclick="switchAdsTab('Y')">昨日</button>
           <button class="tab-btn" id="tabW" onclick="switchAdsTab('W')">本週</button>
           <button class="tab-btn" id="tabM" onclick="switchAdsTab('M')">本月</button>
         </div>
-        <span class="tag t-green" id="adsUpdateTime" style="margin-left:auto">載入中...</span>
-      </div>
-      <div class="g4" style="margin-bottom:12px">
-        <div class="stat"><div class="sl">三所總曝光</div><div class="sv" id="adsTotalImp">—</div></div>
-        <div class="stat"><div class="sl">三所總點擊</div><div class="sv" id="adsTotalClk">—</div></div>
-        <div class="stat"><div class="sl">整體 CTR</div><div class="sv" id="adsTotalCtr">—</div></div>
-        <div class="stat"><div class="sl">三所總費用</div><div class="sv" id="adsTotalCost">—</div></div>
-      </div>
-      <div class="ads-layout">
-        <div class="card" style="margin-bottom:0;padding:12px">
-          <div style="font-size:11px;font-weight:600;color:#1a1a2e;margin-bottom:8px">據點成效排名</div>
-          <table class="rank-table"><thead><tr><th style="width:28px">名次</th><th>據點</th><th style="text-align:right">CTR</th><th style="text-align:right">CPC</th><th style="text-align:right">費用</th><th style="text-align:center">狀態</th></tr></thead><tbody id="rankBody"><tr><td colspan="6" style="text-align:center;color:#9ca3af;padding:16px;font-size:11px">載入中...</td></tr></tbody></table>
+        <div class="g4" style="margin-bottom:12px">
+          <div class="stat"><div class="sl">三所總曝光</div><div class="sv" id="adsTotalImp">—</div></div>
+          <div class="stat"><div class="sl">三所總點擊</div><div class="sv" id="adsTotalClk">—</div></div>
+          <div class="stat"><div class="sl">整體 CTR</div><div class="sv" id="adsTotalCtr">—</div></div>
+          <div class="stat"><div class="sl">三所總費用</div><div class="sv" id="adsTotalCost">—</div></div>
         </div>
-        <div>
-          <div class="budget-mini" style="margin-bottom:10px">
-            <div style="font-size:10px;color:#9ca3af;font-weight:600;text-transform:uppercase;letter-spacing:.06em">本月預算</div>
-            <div class="budget-num">$5,400</div>
-            <div class="budget-bar-wrap"><div class="budget-bar-fill" id="budgetBarNew" style="width:0%"></div></div>
-            <div style="display:flex;justify-content:space-between;font-size:10px;color:#9ca3af;margin-bottom:4px"><span>已用 <strong id="budgetUsedNew" style="color:#1a1a2e">—</strong></span><span id="budgetPctNew" style="color:#e63946;font-weight:600">0%</span></div>
-            <div style="display:flex;justify-content:space-between;font-size:10px;color:#9ca3af"><span>剩餘</span><span id="budgetRemNew" style="color:#1a1a2e;font-weight:600">$5,400</span></div>
-            <div class="dv" style="margin:8px 0"></div>
-            <div style="font-size:10px;color:#9ca3af">每日均耗</div>
-            <div style="font-size:16px;font-weight:700;color:#1a1a2e" id="avgDailyNew">—</div>
-            <div id="predictTag" class="predict-tag" style="display:none">預測超支</div>
+        <div class="ads-layout">
+          <div class="card" style="margin-bottom:0;padding:12px">
+            <div style="font-size:11px;font-weight:600;color:#1a1a2e;margin-bottom:8px">據點成效排名</div>
+            <table class="rank-table"><thead><tr><th style="width:28px">名次</th><th>據點</th><th style="text-align:right">CTR</th><th style="text-align:right">CPC</th><th style="text-align:right">費用</th><th style="text-align:center">狀態</th></tr></thead><tbody id="rankBody"><tr><td colspan="6" style="text-align:center;color:#9ca3af;padding:16px;font-size:11px">載入中...</td></tr></tbody></table>
           </div>
-          <div class="budget-mini">
-            <div style="font-size:10px;color:#9ca3af;font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px">各所月費用</div>
-            <div class="br"><div class="brl" style="font-size:10px">桃園所</div><div class="brt"><div class="brf" id="bfTy" style="width:0%;background:#e63946"></div></div><div class="brv" id="bvTy" style="font-size:11px">—</div></div>
-            <div class="br"><div class="brl" style="font-size:10px">八德所</div><div class="brt"><div class="brf" id="bfBd" style="width:0%;background:#1d4ed8"></div></div><div class="brv" id="bvBd" style="font-size:11px">—</div></div>
-            <div class="br" style="margin-bottom:0"><div class="brl" style="font-size:10px">中壢所</div><div class="brt"><div class="brf" id="bfZl" style="width:0%;background:#16a34a"></div></div><div class="brv" id="bvZl" style="font-size:11px">—</div></div>
-          </div>
-        </div>
-      </div>
-      <div class="card">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;flex-wrap:wrap;gap:8px">
-          <span style="font-size:11px;font-weight:600;color:#1a1a2e">據點比較</span>
-          <div class="chart-sel">
-            <button class="cs-btn active" id="cs-ctr" onclick="switchChart('ctr')">CTR %</button>
-            <button class="cs-btn" id="cs-cpc" onclick="switchChart('cpc')">CPC</button>
-            <button class="cs-btn" id="cs-cost" onclick="switchChart('cost')">費用</button>
-            <button class="cs-btn" id="cs-imp" onclick="switchChart('imp')">曝光</button>
+          <div>
+            <div class="budget-mini" style="margin-bottom:10px">
+              <div style="font-size:10px;color:#9ca3af;font-weight:600;text-transform:uppercase;letter-spacing:.06em">本月預算</div>
+              <div class="budget-num">$5,400</div>
+              <div class="budget-bar-wrap"><div class="budget-bar-fill" id="budgetBarNew" style="width:0%"></div></div>
+              <div style="display:flex;justify-content:space-between;font-size:10px;color:#9ca3af;margin-bottom:4px"><span>已用 <strong id="budgetUsedNew" style="color:#1a1a2e">—</strong></span><span id="budgetPctNew" style="color:#e63946;font-weight:600">0%</span></div>
+              <div style="display:flex;justify-content:space-between;font-size:10px;color:#9ca3af"><span>剩餘</span><span id="budgetRemNew" style="color:#1a1a2e;font-weight:600">$5,400</span></div>
+              <div class="dv" style="margin:8px 0"></div>
+              <div style="font-size:10px;color:#9ca3af">每日均耗</div>
+              <div style="font-size:16px;font-weight:700;color:#1a1a2e" id="avgDailyNew">—</div>
+              <div id="predictTag" class="predict-tag" style="display:none">預測超支</div>
+            </div>
+            <div class="budget-mini">
+              <div style="font-size:10px;color:#9ca3af;font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px">各所月費用</div>
+              <div class="br"><div class="brl" style="font-size:10px">桃園所</div><div class="brt"><div class="brf" id="bfTy" style="width:0%;background:#e63946"></div></div><div class="brv" id="bvTy" style="font-size:11px">—</div></div>
+              <div class="br"><div class="brl" style="font-size:10px">八德所</div><div class="brt"><div class="brf" id="bfBd" style="width:0%;background:#1d4ed8"></div></div><div class="brv" id="bvBd" style="font-size:11px">—</div></div>
+              <div class="br" style="margin-bottom:0"><div class="brl" style="font-size:10px">中壢所</div><div class="brt"><div class="brf" id="bfZl" style="width:0%;background:#16a34a"></div></div><div class="brv" id="bvZl" style="font-size:11px">—</div></div>
+            </div>
           </div>
         </div>
-        <div style="position:relative;height:220px"><canvas id="cAdsMain" role="img" aria-label="據點比較">據點比較</canvas></div>
-      </div>
-      <div class="card">
-        <div style="display:flex;align-items:center;gap:6px;margin-bottom:10px">
-          <div style="width:20px;height:20px;border-radius:6px;background:rgba(230,57,70,.1);display:flex;align-items:center;justify-content:center;font-size:11px">✦</div>
-          <span style="font-size:11px;font-weight:600;color:#1a1a2e">Claude AI 分析摘要</span>
-          <span style="font-size:10px;color:#9ca3af;margin-left:auto" id="aiDate">—</span>
+        <div class="card">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;flex-wrap:wrap;gap:8px">
+            <span style="font-size:11px;font-weight:600;color:#1a1a2e">據點比較</span>
+            <div class="chart-sel">
+              <button class="cs-btn active" id="cs-ctr" onclick="switchChart('ctr')">CTR %</button>
+              <button class="cs-btn" id="cs-cpc" onclick="switchChart('cpc')">CPC</button>
+              <button class="cs-btn" id="cs-cost" onclick="switchChart('cost')">費用</button>
+              <button class="cs-btn" id="cs-imp" onclick="switchChart('imp')">曝光</button>
+            </div>
+          </div>
+          <div style="position:relative;height:220px"><canvas id="cAdsMain" role="img" aria-label="據點比較">據點比較</canvas></div>
         </div>
-        <ul class="ai-list" id="aiList"><li><div class="ai-icon ai-warn">…</div><span>載入中...</span></li></ul>
-      </div>
-    </div>
-
-    <!-- 歷史趨勢 -->
-    <div id="pg-history" class="page">
-      <div class="dh">
-        <button class="back" onclick="gp('overview',sbByPg('overview'))">← 總覽</button>
-        <span class="dtitle">歷史趨勢</span>
-        <span class="tag t-blue" style="margin-left:4px">2025/8 起</span>
-        <span class="tag t-gray" id="histStatus" style="margin-left:4px">載入中...</span>
+        <div class="card">
+          <div style="display:flex;align-items:center;gap:6px;margin-bottom:10px">
+            <div style="width:20px;height:20px;border-radius:6px;background:rgba(230,57,70,.1);display:flex;align-items:center;justify-content:center;font-size:11px">✦</div>
+            <span style="font-size:11px;font-weight:600;color:#1a1a2e">Claude AI 分析摘要</span>
+            <span style="font-size:10px;color:#9ca3af;margin-left:auto" id="aiDate">—</span>
+          </div>
+          <ul class="ai-list" id="aiList"><li><div class="ai-icon ai-warn">…</div><span>載入中...</span></li></ul>
+        </div>
       </div>
 
-      <!-- 月份選擇 -->
-      <div class="card" style="margin-bottom:12px">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;flex-wrap:wrap;gap:8px">
-          <span style="font-size:11px;font-weight:600;color:#1a1a2e">選擇月份範圍</span>
-          <div style="display:flex;gap:6px;flex-wrap:wrap">
-            <button class="cs-btn" onclick="selectHistPreset('3m')">近3個月</button>
-            <button class="cs-btn" onclick="selectHistPreset('6m')">近6個月</button>
-            <button class="cs-btn" onclick="selectHistPreset('all')">全部</button>
+      <!-- 歷史趨勢子頁 -->
+      <div id="sub-history" class="sub-page">
+        <div class="card" style="margin-bottom:12px">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;flex-wrap:wrap;gap:8px">
+            <span style="font-size:11px;font-weight:600;color:#1a1a2e">選擇月份</span>
+            <div style="display:flex;gap:6px">
+              <button class="cs-btn" onclick="selectHistPreset('3m')">近3個月</button>
+              <button class="cs-btn" onclick="selectHistPreset('6m')">近6個月</button>
+              <button class="cs-btn" onclick="selectHistPreset('all')">全部</button>
+            </div>
+          </div>
+          <div class="month-check-grid" id="monthCheckGrid">載入中...</div>
+          <div style="display:flex;justify-content:flex-end;margin-top:8px">
+            <button class="tab-btn active" onclick="renderHistoryCharts()">套用</button>
           </div>
         </div>
-        <div class="month-check-grid" id="monthCheckGrid">載入中...</div>
-        <div style="display:flex;gap:6px;justify-content:flex-end;margin-top:8px">
-          <button class="tab-btn active" onclick="renderHistoryCharts()">套用</button>
+        <div class="hist-kpi">
+          <div class="stat"><div class="sl">期間平均 CTR</div><div class="sv" id="hKpiCtr">—</div></div>
+          <div class="stat"><div class="sl">期間總費用</div><div class="sv" id="hKpiCost">—</div></div>
+          <div class="stat"><div class="sl">期間總點擊</div><div class="sv" id="hKpiClk">—</div></div>
+          <div class="stat"><div class="sl">期間總轉換</div><div class="sv" id="hKpiConv">—</div></div>
         </div>
-      </div>
-
-      <!-- 歷史 KPI -->
-      <div class="hist-kpi">
-        <div class="stat"><div class="sl">期間平均 CTR</div><div class="sv" id="hKpiCtr">—</div></div>
-        <div class="stat"><div class="sl">期間總費用</div><div class="sv" id="hKpiCost">—</div></div>
-        <div class="stat"><div class="sl">期間總點擊</div><div class="sv" id="hKpiClk">—</div></div>
-        <div class="stat"><div class="sl">期間總轉換</div><div class="sv" id="hKpiConv">—</div></div>
-      </div>
-
-      <!-- 歷史圖表指標選擇 -->
-      <div class="card">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;flex-wrap:wrap;gap:8px">
-          <span style="font-size:11px;font-weight:600;color:#1a1a2e">月趨勢 — 三所比較</span>
-          <div class="chart-sel">
-            <button class="cs-btn active" id="hcs-ctr" onclick="switchHistChart('ctr')">CTR %</button>
-            <button class="cs-btn" id="hcs-cost" onclick="switchHistChart('cost')">費用</button>
-            <button class="cs-btn" id="hcs-clk" onclick="switchHistChart('clk')">點擊</button>
-            <button class="cs-btn" id="hcs-imp" onclick="switchHistChart('imp')">曝光</button>
+        <div class="card">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;flex-wrap:wrap;gap:8px">
+            <span style="font-size:11px;font-weight:600;color:#1a1a2e">月趨勢 — 三所比較</span>
+            <div class="chart-sel">
+              <button class="cs-btn active" id="hcs-ctr" onclick="switchHistChart('ctr')">CTR %</button>
+              <button class="cs-btn" id="hcs-cost" onclick="switchHistChart('cost')">費用</button>
+              <button class="cs-btn" id="hcs-clk" onclick="switchHistChart('clk')">點擊</button>
+              <button class="cs-btn" id="hcs-imp" onclick="switchHistChart('imp')">曝光</button>
+            </div>
+          </div>
+          <div style="position:relative;height:260px"><canvas id="cHistLine" role="img" aria-label="歷史趨勢">歷史趨勢</canvas></div>
+          <div style="display:flex;gap:16px;margin-top:10px;font-size:11px;color:#6b7280;flex-wrap:wrap">
+            <span style="display:flex;align-items:center;gap:4px"><span style="width:16px;height:3px;background:#e63946;display:inline-block;border-radius:2px"></span>桃園所</span>
+            <span style="display:flex;align-items:center;gap:4px"><span style="width:16px;height:3px;background:#1d4ed8;display:inline-block;border-radius:2px"></span>八德所</span>
+            <span style="display:flex;align-items:center;gap:4px"><span style="width:16px;height:3px;background:#16a34a;display:inline-block;border-radius:2px"></span>中壢所</span>
           </div>
         </div>
-        <div style="position:relative;height:260px"><canvas id="cHistLine" role="img" aria-label="歷史趨勢折線圖">歷史趨勢</canvas></div>
-        <div style="display:flex;align-items:center;gap:16px;margin-top:10px;font-size:11px;color:#6b7280;flex-wrap:wrap">
-          <span style="display:flex;align-items:center;gap:4px"><span style="width:16px;height:3px;background:#e63946;display:inline-block;border-radius:2px"></span>桃園所</span>
-          <span style="display:flex;align-items:center;gap:4px"><span style="width:16px;height:3px;background:#1d4ed8;display:inline-block;border-radius:2px"></span>八德所</span>
-          <span style="display:flex;align-items:center;gap:4px"><span style="width:16px;height:3px;background:#16a34a;display:inline-block;border-radius:2px"></span>中壢所</span>
+        <div class="card">
+          <div style="font-size:11px;font-weight:600;color:#1a1a2e;margin-bottom:10px">各月費用分佈</div>
+          <div style="position:relative;height:200px"><canvas id="cHistBar" role="img" aria-label="月費用">月費用</canvas></div>
         </div>
-      </div>
-
-      <!-- 月份加總比較 -->
-      <div class="card">
-        <div style="font-size:11px;font-weight:600;color:#1a1a2e;margin-bottom:10px">各月費用分佈</div>
-        <div style="position:relative;height:200px"><canvas id="cHistBar" role="img" aria-label="月費用堆疊長條圖">月費用</canvas></div>
-      </div>
-
-      <!-- 月份明細表 -->
-      <div class="card">
-        <div style="font-size:11px;font-weight:600;color:#1a1a2e;margin-bottom:10px">月份明細</div>
-        <div style="overflow-x:auto">
-          <table style="width:100%;border-collapse:collapse;font-size:11px" id="histDetailTable">
-            <thead><tr style="border-bottom:1px solid rgba(0,0,0,.08)">
-              <th style="padding:6px 8px;text-align:left;color:#9ca3af;font-weight:600">月份</th>
-              <th style="padding:6px 8px;text-align:right;color:#9ca3af;font-weight:600">桃園 CTR</th>
-              <th style="padding:6px 8px;text-align:right;color:#9ca3af;font-weight:600">八德 CTR</th>
-              <th style="padding:6px 8px;text-align:right;color:#9ca3af;font-weight:600">中壢 CTR</th>
-              <th style="padding:6px 8px;text-align:right;color:#9ca3af;font-weight:600">總費用</th>
-              <th style="padding:6px 8px;text-align:right;color:#9ca3af;font-weight:600">總點擊</th>
-            </tr></thead>
-            <tbody id="histDetailBody"><tr><td colspan="6" style="text-align:center;padding:16px;color:#9ca3af">載入中...</td></tr></tbody>
-          </table>
+        <div class="card">
+          <div style="font-size:11px;font-weight:600;color:#1a1a2e;margin-bottom:10px">月份明細</div>
+          <div style="overflow-x:auto">
+            <table style="width:100%;border-collapse:collapse;font-size:11px" id="histDetailTable">
+              <thead><tr style="border-bottom:1px solid rgba(0,0,0,.08)">
+                <th style="padding:6px 8px;text-align:left;color:#9ca3af;font-weight:600">月份</th>
+                <th style="padding:6px 8px;text-align:right;color:#9ca3af;font-weight:600">桃園 CTR</th>
+                <th style="padding:6px 8px;text-align:right;color:#9ca3af;font-weight:600">八德 CTR</th>
+                <th style="padding:6px 8px;text-align:right;color:#9ca3af;font-weight:600">中壢 CTR</th>
+                <th style="padding:6px 8px;text-align:right;color:#9ca3af;font-weight:600">總費用</th>
+                <th style="padding:6px 8px;text-align:right;color:#9ca3af;font-weight:600">總點擊</th>
+              </tr></thead>
+              <tbody id="histDetailBody"><tr><td colspan="6" style="text-align:center;padding:16px;color:#9ca3af">載入中...</td></tr></tbody>
+            </table>
+          </div>
         </div>
       </div>
     </div>
@@ -393,10 +390,9 @@ body{background:linear-gradient(135deg,#e8eaf6 0%,#fce4ec 40%,#e0f2f1 100%);min-
 var GAS_URL='https://script.google.com/macros/s/AKfycbznI5AzCZmMNKqi3_2m7R-fW0sX0t1eBRQVBWjnlJQgXivG7PoVVyjdKsackvZPkHTqlQ/exec';
 var adsData=null, histData=null, adsLoaded=false;
 var currentTab='Y', currentChart='ctr', currentHistChart='ctr';
-var selectedHistMonths=[];
 
-var pgIds=['overview','ads','history','visitors','fanpage','cpv','events','tasks'];
-var pgTitles={overview:'總覽',ads:'Google Ads 成效',history:'歷史趨勢',visitors:'來店客戶分析',fanpage:'據點粉專',cpv:'單位來店成本',events:'活動成效',tasks:'工作進度'};
+var pgIds=['overview','ads','visitors','fanpage','cpv','events','tasks'];
+var pgTitles={overview:'總覽',ads:'Google Ads 成效',visitors:'來店客戶分析',fanpage:'據點粉專',cpv:'單位來店成本',events:'活動成效',tasks:'工作進度'};
 var sbItems=document.querySelectorAll('.sb-item');
 function sbByPg(id){return sbItems[pgIds.indexOf(id)]||null}
 function gp(id,el){
@@ -406,30 +402,42 @@ function gp(id,el){
   if(el)el.classList.add('active');
   document.getElementById('pgTitle').textContent=pgTitles[id]||'';
 }
+function switchSubTab(id,el){
+  document.querySelectorAll('.sub-page').forEach(function(p){p.classList.remove('active')});
+  document.querySelectorAll('.sub-tab').forEach(function(t){t.classList.remove('active')});
+  document.getElementById('sub-'+id).classList.add('active');
+  el.classList.add('active');
+  if(id==='history'){
+    if(histData){
+      buildMonthSelector();
+      renderHistoryCharts();
+    } else {
+      document.getElementById('monthCheckGrid').textContent='數據載入中，請稍候再點選...';
+    }
+  }
+}
 function triggerAdsLoad(){if(!adsLoaded){adsLoaded=true;loadAdsData();}}
 function openU(){document.getElementById('uModal').classList.add('open')}
 function closeU(){document.getElementById('uModal').classList.remove('open')}
 document.getElementById('uModal').addEventListener('click',function(e){if(e.target===this)closeU()});
-function handleF(f){var l=document.getElementById('fList');l.innerHTML='';Array.from(f).forEach(function(x){var d=document.createElement('div');d.innerHTML='<span>'+x.name+'</span>';l.appendChild(d);})}
+function handleF(f){var l=document.getElementById('fList');l.innerHTML='';Array.from(f).forEach(function(x){var d=document.createElement('div');d.textContent=x.name;l.appendChild(d);})}
 function confirmU(){closeU();}
 
 function loadAdsData(){
   fetch(GAS_URL)
     .then(function(r){return r.json()})
     .then(function(data){
-      // 處理最新數據
-      var rows=data.latest;
-      if(rows&&rows.length>1){
+      if(data.latest&&data.latest.length>1){
         adsData={};
-        rows.slice(1).forEach(function(row){
+        data.latest.slice(1).forEach(function(row){
           if(!row[1])return;
           var name=String(row[1]);
           var key=name.indexOf('桃園')>-1?'ty':name.indexOf('八德')>-1?'bd':name.indexOf('中壢')>-1?'zl':name.indexOf('合計')>-1?'total':'';
           if(!key)return;
           function v(i){return row[i]!=null?Number(row[i]):0}
           adsData[key]={
-            label:name.indexOf('桃園')>-1?'桃園所':name.indexOf('八德')>-1?'八德所':name.indexOf('中壢')>-1?'中壢所':'三所合計',
-            color:name.indexOf('桃園')>-1?'#e63946':name.indexOf('八德')>-1?'#1d4ed8':'#16a34a',
+            label:key==='ty'?'桃園所':key==='bd'?'八德所':key==='zl'?'中壢所':'三所合計',
+            color:key==='ty'?'#e63946':key==='bd'?'#1d4ed8':'#16a34a',
             updateTime:row[0]?String(row[0]):'',
             Y:{imp:v(2),clk:v(3),ctr:v(4),cpc:v(5),cost:v(6),conv:v(7)},
             W:{imp:v(8),clk:v(9),ctr:v(10),cost:v(11)},
@@ -439,44 +447,17 @@ function loadAdsData(){
         var t=adsData.total?adsData.total.updateTime:'';
         s('adsUpdateTime',t?'更新：'+t:'已載入');
         renderAds('Y');
-        if(adsData.total){
-          s('ovCtr',Number(adsData.total.Y.ctr).toFixed(2)+'%');
-          s('ovCost','NT$'+Math.round(adsData.total.M.cost));
-        }
+        if(adsData.total){s('ovCtr',Number(adsData.total.Y.ctr).toFixed(2)+'%');s('ovCost','NT$'+Math.round(adsData.total.M.cost));}
       }
-      // 處理AI建議
-      if(data.ai&&data.ai[1]) function renderAiAdvice(aiRow){
-  var el=document.getElementById('aiList'),dateEl=document.getElementById('aiDate');
-  if(!aiRow||!aiRow[1]){el.innerHTML='<li><div class="ai-icon ai-warn">!</div><span>暫無AI建議</span></li>';return;}
-  var raw=String(aiRow[1]);
-  dateEl.textContent=aiRow[0]?String(aiRow[0]):'';
-  var html='',count=0;
-  var blocks={'整體評估':'ok','異常警示':'bad','今日操作建議':'warn'};
-  var currentBlock='ok';
-  raw.split('\n').forEach(function(line){
-    if(count>=4)return;
-    var t=line.trim();
-    if(!t||t.length<3)return;
-    // 偵測區塊標題
-    Object.keys(blocks).forEach(function(k){if(t.indexOf(k)>-1)currentBlock=blocks[k];});
-    // 跳過標題行
-    if(t.startsWith('【')&&t.indexOf('】')>-1)return;
-    // 清除前綴符號
-    t=t.replace(/^[#*\-•·\d\.\)]+\s*/,'').trim();
-    if(t.length<5)return;
-    var icon=currentBlock==='ok'?'✓':currentBlock==='bad'?'!':'→';
-    html+='<li><div class="ai-icon ai-'+currentBlock+'">'+icon+'</div><span>'+t+'</span></li>';
-    count++;
-  });
-  el.innerHTML=html||'<li><div class="ai-icon ai-ok">✓</div><span>'+raw.substring(0,150)+'</span></li>';
-}
-      ;
-      // 處理歷史數據
+      if(data.ai&&data.ai[1])renderAiAdvice(data.ai);
       if(data.history&&data.history.length>1){
-        histData=data.history;
-        buildMonthSelector();
-        s('histStatus','已載入 '+data.history.length+' 筆');
-      }
+  histData=data.history;
+  // 如果目前在歷史趨勢頁，直接渲染
+  if(document.getElementById('sub-history').classList.contains('active')){
+    buildMonthSelector();
+    renderHistoryCharts();
+  }
+}
     })
     .catch(function(e){s('adsUpdateTime','載入失敗');console.error(e);});
 }
@@ -487,14 +468,13 @@ function buildMonthSelector(){
   var months={};
   histData.slice(1).forEach(function(row){
     if(!row[0])return;
-    var d=String(row[0]);
-    var ym=d.substring(0,7);
-    if(ym)months[ym]=true;
+    var ym=String(row[0]).substring(0,7);
+    if(ym&&ym.length===7)months[ym]=true;
   });
-  var sortedMonths=Object.keys(months).sort();
+  var sorted=Object.keys(months).sort();
   var grid=document.getElementById('monthCheckGrid');
   grid.innerHTML='';
-  sortedMonths.forEach(function(ym){
+  sorted.forEach(function(ym){
     var btn=document.createElement('button');
     btn.className='mc-btn sel';
     btn.dataset.ym=ym;
@@ -502,103 +482,67 @@ function buildMonthSelector(){
     btn.onclick=function(){this.classList.toggle('sel');};
     grid.appendChild(btn);
   });
-  selectedHistMonths=sortedMonths;
-  // 預設選近6個月
   selectHistPreset('6m');
 }
 
 function selectHistPreset(p){
-  var btns=document.querySelectorAll('.mc-btn');
-  var all=Array.from(btns).map(function(b){return b.dataset.ym}).sort();
-  var sel=[];
-  if(p==='all'){sel=all;}
-  else if(p==='6m'){sel=all.slice(-6);}
-  else if(p==='3m'){sel=all.slice(-3);}
+  var btns=Array.from(document.querySelectorAll('.mc-btn'));
+  var all=btns.map(function(b){return b.dataset.ym}).sort();
+  var sel=p==='all'?all:p==='6m'?all.slice(-6):all.slice(-3);
   btns.forEach(function(b){b.classList.toggle('sel',sel.indexOf(b.dataset.ym)>-1);});
-}
-
-function getSelectedMonths(){
-  return Array.from(document.querySelectorAll('.mc-btn.sel')).map(function(b){return b.dataset.ym}).sort();
 }
 
 function renderHistoryCharts(){
   if(!histData)return;
-  var selMonths=getSelectedMonths();
+  var selMonths=Array.from(document.querySelectorAll('.mc-btn.sel')).map(function(b){return b.dataset.ym}).sort();
   if(!selMonths.length)return;
-
-  // 按月彙總各所數據
   var monthMap={};
-  selMonths.forEach(function(ym){monthMap[ym]={ty:{imp:0,clk:0,cost:0,conv:0,days:0},bd:{imp:0,clk:0,cost:0,conv:0,days:0},zl:{imp:0,clk:0,cost:0,conv:0,days:0},total:{imp:0,clk:0,cost:0,conv:0}};});
-
+  selMonths.forEach(function(ym){monthMap[ym]={ty:{imp:0,clk:0,cost:0,conv:0},bd:{imp:0,clk:0,cost:0,conv:0},zl:{imp:0,clk:0,cost:0,conv:0},total:{imp:0,clk:0,cost:0,conv:0}};});
   histData.slice(1).forEach(function(row){
     if(!row[0]||!row[1])return;
-    var d=String(row[0]),name=String(row[1]);
-    var ym=d.substring(0,7);
+    var ym=String(row[0]).substring(0,7);
     if(!monthMap[ym])return;
-    var imp=Number(row[2])||0,clk=Number(row[3])||0,cost=Number(row[6])||0,conv=Number(row[7])||0;
+    var name=String(row[1]);
     var key=name.indexOf('桃園')>-1?'ty':name.indexOf('八德')>-1?'bd':name.indexOf('中壢')>-1?'zl':name.indexOf('合計')>-1?'total':'';
     if(!key)return;
-    if(key==='total'){monthMap[ym].total.imp+=imp;monthMap[ym].total.clk+=clk;monthMap[ym].total.cost+=cost;monthMap[ym].total.conv+=conv;}
-    else{monthMap[ym][key].imp+=imp;monthMap[ym][key].clk+=clk;monthMap[ym][key].cost+=cost;monthMap[ym][key].conv+=conv;monthMap[ym][key].days++;}
+    var imp=Number(row[2])||0,clk=Number(row[3])||0,cost=Number(row[6])||0,conv=Number(row[7])||0;
+    monthMap[ym][key].imp+=imp;monthMap[ym][key].clk+=clk;monthMap[ym][key].cost+=cost;monthMap[ym][key].conv+=conv;
   });
-
   var labels=selMonths.map(function(ym){return ym.replace('-','/')});
-  var sites=['ty','bd','zl'];
-  var colors={'ty':'#e63946','bd':'#1d4ed8','zl':'#16a34a'};
   var metric=currentHistChart;
-
-  function getVal(obj,m){
-    if(m==='ctr')return obj.imp>0?parseFloat((obj.clk/obj.imp*100).toFixed(2)):0;
-    if(m==='cost')return Math.round(obj.cost);
-    if(m==='clk')return obj.clk;
-    if(m==='imp')return obj.imp;
-    return 0;
+  function getV(obj){
+    if(metric==='ctr')return obj.imp>0?parseFloat((obj.clk/obj.imp*100).toFixed(2)):0;
+    if(metric==='cost')return Math.round(obj.cost);
+    if(metric==='clk')return obj.clk;
+    return obj.imp;
   }
-
-  // KPI
   var totImp=0,totClk=0,totCost=0,totConv=0;
   selMonths.forEach(function(ym){var t=monthMap[ym].total;totImp+=t.imp;totClk+=t.clk;totCost+=t.cost;totConv+=t.conv;});
   s('hKpiCtr',totImp>0?(totClk/totImp*100).toFixed(2)+'%':'—');
   s('hKpiCost','NT$'+Math.round(totCost));
   s('hKpiClk',totClk.toLocaleString());
   s('hKpiConv',totConv.toFixed(0));
-
-  // 折線圖
+  var colors={ty:'#e63946',bd:'#1d4ed8',zl:'#16a34a'};
+  var siteLabels={ty:'桃園所',bd:'八德所',zl:'中壢所'};
   dc('cHistLine');
-  var lineDatasets=sites.map(function(k){
-    return{label:k==='ty'?'桃園所':k==='bd'?'八德所':'中壢所',data:selMonths.map(function(ym){return getVal(monthMap[ym][k],metric)}),borderColor:colors[k],backgroundColor:'transparent',borderWidth:2,pointRadius:4,pointBackgroundColor:colors[k],tension:.3};
-  });
   charts.cHistLine=new Chart(document.getElementById('cHistLine'),{
-    type:'line',data:{labels:labels,datasets:lineDatasets},
-    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{titleFont:{size:10},bodyFont:{size:10},callbacks:{label:function(c){var v=c.raw;return ' '+(metric==='ctr'?v.toFixed(2)+'%':metric==='imp'?v.toLocaleString():'NT$'+v)}}}},scales:{x:{ticks:{color:'#9ca3af',font:{size:10}},grid:{color:'rgba(0,0,0,.04)'}},y:{ticks:{color:'#9ca3af',font:{size:10},callback:function(v){return metric==='ctr'?v+'%':metric==='imp'?v.toLocaleString():'$'+v}},grid:{color:'rgba(0,0,0,.05)'}}}}
+    type:'line',
+    data:{labels:labels,datasets:['ty','bd','zl'].map(function(k){return{label:siteLabels[k],data:selMonths.map(function(ym){return getV(monthMap[ym][k])}),borderColor:colors[k],backgroundColor:'transparent',borderWidth:2,pointRadius:4,pointBackgroundColor:colors[k],tension:.3};})},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{titleFont:{size:10},bodyFont:{size:10},callbacks:{label:function(c){return ' '+(metric==='ctr'?c.raw.toFixed(2)+'%':metric==='imp'?c.raw.toLocaleString():'NT$'+c.raw)}}}},scales:{x:{ticks:{color:'#9ca3af',font:{size:10}},grid:{color:'rgba(0,0,0,.04)'}},y:{ticks:{color:'#9ca3af',font:{size:10},callback:function(v){return metric==='ctr'?v+'%':metric==='imp'?v.toLocaleString():'$'+v}},grid:{color:'rgba(0,0,0,.05)'}}}}
   });
-
-  // 費用堆疊長條
   dc('cHistBar');
-  var barDatasets=sites.map(function(k){
-    return{label:k==='ty'?'桃園所':k==='bd'?'八德所':'中壢所',data:selMonths.map(function(ym){return Math.round(monthMap[ym][k].cost)}),backgroundColor:colors[k],borderWidth:0,borderRadius:3};
-  });
   charts.cHistBar=new Chart(document.getElementById('cHistBar'),{
-    type:'bar',data:{labels:labels,datasets:barDatasets},
+    type:'bar',
+    data:{labels:labels,datasets:['ty','bd','zl'].map(function(k){return{label:siteLabels[k],data:selMonths.map(function(ym){return Math.round(monthMap[ym][k].cost)}),backgroundColor:colors[k],borderWidth:0,borderRadius:3};})},
     options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:true,labels:{color:'#9ca3af',font:{size:10},boxWidth:9}},tooltip:{titleFont:{size:10},bodyFont:{size:10}}},scales:{x:{stacked:true,ticks:{color:'#9ca3af',font:{size:10}},grid:{display:false}},y:{stacked:true,ticks:{color:'#9ca3af',font:{size:10},callback:function(v){return '$'+v}},grid:{color:'rgba(0,0,0,.05)'}}}}
   });
-
-  // 明細表
-  var tbody=document.getElementById('histDetailBody');
-  var html='';
+  var tbody=document.getElementById('histDetailBody'),html='';
   selMonths.forEach(function(ym){
     var m=monthMap[ym];
-    function ctr(obj){return obj.imp>0?(obj.clk/obj.imp*100).toFixed(2)+'%':'—';}
-    html+='<tr style="border-bottom:1px solid rgba(0,0,0,.05)">';
-    html+='<td style="padding:6px 8px;font-weight:600">'+ym.replace('-','/')+'</td>';
-    html+='<td style="padding:6px 8px;text-align:right;color:#e63946">'+ctr(m.ty)+'</td>';
-    html+='<td style="padding:6px 8px;text-align:right;color:#1d4ed8">'+ctr(m.bd)+'</td>';
-    html+='<td style="padding:6px 8px;text-align:right;color:#16a34a">'+ctr(m.zl)+'</td>';
-    html+='<td style="padding:6px 8px;text-align:right">NT$'+Math.round(m.total.cost)+'</td>';
-    html+='<td style="padding:6px 8px;text-align:right">'+m.total.clk+'</td>';
-    html+='</tr>';
+    function ctr(o){return o.imp>0?(o.clk/o.imp*100).toFixed(2)+'%':'—';}
+    html+='<tr style="border-bottom:1px solid rgba(0,0,0,.05)"><td style="padding:6px 8px;font-weight:600">'+ym.replace('-','/')+'</td><td style="padding:6px 8px;text-align:right;color:#e63946">'+ctr(m.ty)+'</td><td style="padding:6px 8px;text-align:right;color:#1d4ed8">'+ctr(m.bd)+'</td><td style="padding:6px 8px;text-align:right;color:#16a34a">'+ctr(m.zl)+'</td><td style="padding:6px 8px;text-align:right">NT$'+Math.round(m.total.cost)+'</td><td style="padding:6px 8px;text-align:right">'+m.total.clk+'</td></tr>';
   });
-  tbody.innerHTML=html||'<tr><td colspan="6" style="text-align:center;padding:16px;color:#9ca3af">無數據</td></tr>';
+  document.getElementById('histDetailBody').innerHTML=html||'<tr><td colspan="6" style="text-align:center;padding:16px;color:#9ca3af">無數據</td></tr>';
 }
 
 function switchHistChart(m){
@@ -607,7 +551,7 @@ function switchHistChart(m){
   renderHistoryCharts();
 }
 
-// ===== 當日 Ads =====
+// ===== 即時成效 =====
 function renderAds(tab){
   currentTab=tab;
   if(!adsData)return;
@@ -616,19 +560,16 @@ function renderAds(tab){
   s('adsTotalClk',tot?Number(tot.clk).toLocaleString():'—');
   s('adsTotalCtr',tot?Number(tot.ctr).toFixed(2)+'%':'—');
   s('adsTotalCost',tot?'NT$'+Math.round(tot.cost):'—');
-  var mCost=adsData.total?Math.round(adsData.total.M.cost):0;
-  var budget=5400,pct=Math.min(Math.round(mCost/budget*100),100);
+  var mCost=adsData.total?Math.round(adsData.total.M.cost):0,budget=5400,pct=Math.min(Math.round(mCost/budget*100),100);
   s('budgetUsedNew','NT$'+mCost);s('budgetPctNew',pct+'%');s('budgetRemNew','NT$'+(budget-mCost));
   document.getElementById('budgetBarNew').style.width=pct+'%';
   var days=new Date().getDate(),avg=Math.round(mCost/days);
   s('avgDailyNew','NT$'+avg);
   var pred=document.getElementById('predictTag');
   if(avg*30>budget){pred.style.display='inline-block';pred.textContent='預測月底超支 NT$'+(avg*30-budget);}else{pred.style.display='none';}
-  var sites=['ty','bd','zl'];
-  var maxC=Math.max.apply(null,sites.map(function(k){return adsData[k]?adsData[k].M.cost:0}));
-  sites.forEach(function(k){
-    var d=adsData[k]?adsData[k].M:null,c=d?Math.round(d.cost):0;
-    var K=k.charAt(0).toUpperCase()+k.slice(1);
+  var maxC=Math.max.apply(null,['ty','bd','zl'].map(function(k){return adsData[k]?adsData[k].M.cost:0}));
+  ['ty','bd','zl'].forEach(function(k){
+    var c=adsData[k]?Math.round(adsData[k].M.cost):0,K=k.charAt(0).toUpperCase()+k.slice(1);
     document.getElementById('bf'+K).style.width=(maxC>0?Math.round(c/maxC*100):0)+'%';
     s('bv'+K,'$'+c);
   });
@@ -639,16 +580,13 @@ function renderAds(tab){
 function renderRankTable(tab){
   if(!adsData)return;
   var medals=['🥇','🥈','🥉'];
-  var rows=['ty','bd','zl'].map(function(k){
-    var d=adsData[k]?adsData[k][tab]:null;
-    return{k:k,label:adsData[k]?adsData[k].label:'',color:adsData[k]?adsData[k].color:'#9ca3af',ctr:d?Number(d.ctr):0,cpc:d?Number(d.cpc):0,cost:d?Number(d.cost):0};
-  });
+  var rows=['ty','bd','zl'].map(function(k){var d=adsData[k]?adsData[k][tab]:null;return{k:k,label:adsData[k]?adsData[k].label:'',ctr:d?Number(d.ctr):0,cpc:d?Number(d.cpc):0,cost:d?Number(d.cost):0};});
   rows.sort(function(a,b){return b.ctr-a.ctr});
   var html='';
   rows.forEach(function(r,i){
     var cC=r.ctr>=8?'metric-good':r.ctr>=4?'metric-warn':'metric-bad';
-    var pC=r.ctr>=8?'status-green':r.ctr>=4?'status-yellow':'status-red';
-    html+='<tr><td><span class="medal">'+medals[i]+'</span></td><td><div class="site-name"><span class="status-dot '+pC+'"></span>'+r.label+'</div></td><td style="text-align:right"><span class="'+cC+'">'+r.ctr.toFixed(2)+'%</span></td><td style="text-align:right;color:#6b7280">'+(r.cpc>0?'$'+r.cpc.toFixed(1):'—')+'</td><td style="text-align:right;color:#6b7280">'+(r.cost>0?'NT$'+Math.round(r.cost):'—')+'</td><td style="text-align:center"><span class="status-dot '+pC+'"></span></td></tr>';
+    var sC=r.ctr>=8?'status-green':r.ctr>=4?'status-yellow':'status-red';
+    html+='<tr><td><span class="medal">'+medals[i]+'</span></td><td><div class="site-name"><span class="status-dot '+sC+'"></span>'+r.label+'</div></td><td style="text-align:right"><span class="'+cC+'">'+r.ctr.toFixed(2)+'%</span></td><td style="text-align:right;color:#6b7280">'+(r.cpc>0?'$'+r.cpc.toFixed(1):'—')+'</td><td style="text-align:right;color:#6b7280">'+(r.cost>0?'NT$'+Math.round(r.cost):'—')+'</td><td style="text-align:center"><span class="status-dot '+sC+'"></span></td></tr>';
   });
   document.getElementById('rankBody').innerHTML=html;
 }
@@ -656,9 +594,8 @@ function renderRankTable(tab){
 function renderMainChart(metric,tab){
   currentChart=metric;
   if(!adsData)return;
-  var sites=['ty','bd','zl'];
-  var vals=sites.map(function(k){var d=adsData[k]?adsData[k][tab]:null;if(!d)return 0;return metric==='ctr'?Number(d.ctr):metric==='cpc'?Number(d.cpc):metric==='cost'?Number(d.cost):Number(d.imp);});
-  var fmt=metric==='ctr'?function(v){return v.toFixed(2)+'%'}:metric==='imp'?function(v){return v.toLocaleString()}:function(v){return 'NT$'+Math.round(v)};
+  var vals=['ty','bd','zl'].map(function(k){var d=adsData[k]?adsData[k][tab]:null;if(!d)return 0;return metric==='ctr'?Number(d.ctr):metric==='cpc'?Number(d.cpc):metric==='cost'?Number(d.cost):Number(d.imp);});
+  var fmt=metric==='ctr'?function(v){return v.toFixed(2)+'%'}:metric==='imp'?function(v){return v.toLocaleString()}:function(v){return'NT$'+Math.round(v)};
   dc('cAdsMain');
   charts.cAdsMain=new Chart(document.getElementById('cAdsMain'),{type:'bar',data:{labels:['桃園所','八德所','中壢所'],datasets:[{data:vals,backgroundColor:['#e63946','#1d4ed8','#16a34a'],borderWidth:0,borderRadius:8,barThickness:60}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:function(c){return ' '+fmt(c.raw)}},titleFont:{size:11},bodyFont:{size:11}}},scales:{x:{ticks:{color:'#9ca3af',font:{size:12}},grid:{display:false}},y:{ticks:{color:'#9ca3af',font:{size:10},callback:fmt},grid:{color:'rgba(0,0,0,.05)'}}}}});
 }
@@ -671,17 +608,18 @@ function renderAiAdvice(aiRow){
   if(!aiRow||!aiRow[1]){el.innerHTML='<li><div class="ai-icon ai-warn">!</div><span>暫無AI建議</span></li>';return;}
   var raw=String(aiRow[1]);
   dateEl.textContent=aiRow[0]?String(aiRow[0]):'';
-  var lines=raw.split('\n').filter(function(l){return l.trim().length>0});
-  var html='',count=0;
-  lines.forEach(function(line){
+  var html='',count=0,currentBlock='ok';
+  var blocks={'整體評估':'ok','異常警示':'bad','今日操作建議':'warn'};
+  raw.split('\n').forEach(function(line){
     if(count>=4)return;
-    var t=line.trim().replace(/^[【#*\-•·\d\.\)]+\s*/,'');
-    if(t.length<5||t.startsWith('】'))return;
-    var icon,cls;
-    if(t.indexOf('異常')>-1||t.indexOf('超支')>-1||t.indexOf('偏高')>-1){icon='!';cls='ai-bad';}
-    else if(t.indexOf('建議')>-1||t.indexOf('調整')>-1){icon='→';cls='ai-warn';}
-    else{icon='✓';cls='ai-ok';}
-    html+='<li><div class="ai-icon '+cls+'">'+icon+'</div><span>'+t+'</span></li>';
+    var t=line.trim();
+    if(!t||t.length<3)return;
+    Object.keys(blocks).forEach(function(k){if(t.indexOf(k)>-1)currentBlock=blocks[k];});
+    if(t.startsWith('【')&&t.indexOf('】')>-1)return;
+    t=t.replace(/^[#*\-•·\d\.\)]+\s*/,'').trim();
+    if(t.length<5)return;
+    var icon=currentBlock==='ok'?'✓':currentBlock==='bad'?'!':'→';
+    html+='<li><div class="ai-icon ai-'+currentBlock+'">'+icon+'</div><span>'+t+'</span></li>';
     count++;
   });
   el.innerHTML=html||'<li><div class="ai-icon ai-ok">✓</div><span>'+raw.substring(0,150)+'</span></li>';
@@ -707,7 +645,7 @@ function getAgg(){
 }
 function buildCharts(){
   var agg=getAgg();
-  ['cSrc','cDist','cConsid','cMon','cCPV','cTask','cScore'].forEach(dc);
+  ['cSrc','cDist','cConsid','cMon','cTask','cScore'].forEach(dc);
   charts.cSrc=new Chart(document.getElementById('cSrc'),{type:'doughnut',data:{labels:sLabels,datasets:[{data:agg.src,backgroundColor:sColors,borderWidth:0}]},options:{...def,cutout:'58%'}});
   charts.cDist=new Chart(document.getElementById('cDist'),{type:'bar',data:{labels:dLabels,datasets:[{data:agg.dist,backgroundColor:'#e63946',borderWidth:0,borderRadius:4}]},options:{...def,scales:{x:{ticks:{color:tc,font:{size:9}},grid:{display:false}},y:{ticks:{color:tc,font:{size:9}},grid:{color:gc}}}}});
   charts.cConsid=new Chart(document.getElementById('cConsid'),{type:'bar',data:{labels:cLabels,datasets:[{data:agg.consid,backgroundColor:'#1d3557',borderWidth:0,borderRadius:3}]},options:{...def,indexAxis:'y',scales:{x:{ticks:{color:tc,font:{size:9}},grid:{color:gc}},y:{ticks:{color:tc,font:{size:9}},grid:{display:false}}}}});
