@@ -112,8 +112,8 @@ body{background:linear-gradient(135deg,#e8eaf6 0%,#fce4ec 40%,#e0f2f1 100%);min-
   <div class="sb-item active" onclick="gp('overview',this)">
     <svg viewBox="0 0 14 14"><rect x="1" y="1" width="5" height="5" rx="1"/><rect x="8" y="1" width="5" height="5" rx="1"/><rect x="1" y="8" width="5" height="5" rx="1"/><rect x="8" y="8" width="5" height="5" rx="1"/></svg>總覽
   </div>
-  <div class="sb-item" onclick="gp('ads',this)">
-    <svg viewBox="0 0 14 14"><rect x="1" y="8" width="3" height="5" rx="1"/><rect x="5.5" y="5" width="3" height="8" rx="1"/><rect x="10" y="2" width="3" height="11" rx="1"/></svg>Google Ads
+<div class="sb-item" onclick="gp('ads',this);loadAdsIfNeeded()">
+  <svg viewBox="0 0 14 14"><rect x="1" y="8" width="3" height="5" rx="1"/><rect x="5.5" y="5" width="3" height="8" rx="1"/><rect x="10" y="2" width="3" height="11" rx="1"/></svg>Google Ads
   </div>
   <div class="sb-item" onclick="gp('visitors',this)">
     <svg viewBox="0 0 14 14"><circle cx="5" cy="4" r="2"/><path d="M1 12c0-2.2 1.8-4 4-4s4 1.8 4 4"/><circle cx="11" cy="4" r="1.5"/><path d="M11 7.5c1.5.4 2.5 1.8 2.5 3.5"/></svg>來店分析
@@ -189,7 +189,7 @@ body{background:linear-gradient(135deg,#e8eaf6 0%,#fce4ec 40%,#e0f2f1 100%);min-
         <div class="kpi"><div class="kpi-l">工作完成率</div><div class="kpi-v">37%</div><div class="kpi-s">4 / 11 項完成</div></div>
       </div>
       <div class="mod-grid">
-        <div class="mod" onclick="gp('ads',sbByPg('ads'))"><div class="mod-ico" style="background:rgba(230,57,70,.12)"><svg width="15" height="15" viewBox="0 0 14 14" fill="none" stroke="#e63946" stroke-width="1.5"><rect x="1" y="8" width="3" height="5" rx="1"/><rect x="5.5" y="5" width="3" height="8" rx="1"/><rect x="10" y="2" width="3" height="11" rx="1"/></svg></div><div class="mod-t">Google Ads 成效</div><div class="mod-d">曝光、點擊數、CTR、CPC、轉換成本</div><div class="mod-ft"><span class="tag t-gray">待串接</span><span class="arr">→</span></div></div>
+        <div class="mod" onclick="gp('ads',sbByPg('ads'));loadAdsIfNeeded()"><div class="mod-ico" style="background:rgba(230,57,70,.12)"><svg width="15" height="15" viewBox="0 0 14 14" fill="none" stroke="#e63946" stroke-width="1.5"><rect x="1" y="8" width="3" height="5" rx="1"/><rect x="5.5" y="5" width="3" height="8" rx="1"/><rect x="10" y="2" width="3" height="11" rx="1"/></svg></div><div class="mod-t">Google Ads 成效</div><div class="mod-d">曝光、點擊數、CTR、CPC、轉換成本</div><div class="mod-ft"><span class="tag t-gray">待串接</span><span class="arr">→</span></div></div>
         <div class="mod" onclick="gp('visitors',sbByPg('visitors'))"><div class="mod-ico" style="background:rgba(22,163,74,.1)"><svg width="15" height="15" viewBox="0 0 14 14" fill="none" stroke="#16a34a" stroke-width="1.5"><circle cx="5" cy="4" r="2"/><path d="M1 12c0-2.2 1.8-4 4-4s4 1.8 4 4"/><circle cx="11" cy="4" r="1.5"/><path d="M11 7.5c1.5.4 2.5 1.8 2.5 3.5"/></svg></div><div class="mod-t">來店客戶分析</div><div class="mod-d">來源佔比、地區分布、轄區比、考量因素</div><div class="mod-ft"><span class="tag t-green" id="visTag">467 人次</span><span class="arr">→</span></div></div>
         <div class="mod" onclick="gp('fanpage',sbByPg('fanpage'))"><div class="mod-ico" style="background:rgba(124,58,237,.1)"><svg width="15" height="15" viewBox="0 0 14 14" fill="none" stroke="#7c3aed" stroke-width="1.5"><path d="M7 2C4.8 2 3 3.6 3 5.6c0 3 4 6.4 4 6.4s4-3.4 4-6.4C11 3.6 9.2 2 7 2z"/></svg></div><div class="mod-t">據點粉專</div><div class="mod-d">追蹤數、觸及、計分、私訊、打氣金</div><div class="mod-ft"><span class="tag t-blue">中壢 160 分</span><span class="arr">→</span></div></div>
         <div class="mod" onclick="gp('cpv',sbByPg('cpv'))"><div class="mod-ico" style="background:rgba(180,83,9,.1)"><svg width="15" height="15" viewBox="0 0 14 14" fill="none" stroke="#b45309" stroke-width="1.5"><circle cx="7" cy="7" r="5.5"/><path d="M7 4.5v5M5 5.5h3.5a1 1 0 010 3H5"/></svg></div><div class="mod-t">單位來店成本 CPV</div><div class="mod-d">Google、FB、電視牆 CPV 與渠道貢獻率</div><div class="mod-ft"><span class="tag t-amber">可即時計算</span><span class="arr">→</span></div></div>
@@ -581,8 +581,14 @@ function switchAdsTab(tab) {
   renderAdsData(tab);
 }
 
-loadAdsData();
-// ===== END Google Ads =====
+var adsLoaded = false;
+function loadAdsIfNeeded() {
+  if(!adsLoaded) {
+    adsLoaded = true;
+    loadAdsData();
+  }
+}
+  // ===== END Google Ads =====
   buildCharts();
 }
 const allData={
