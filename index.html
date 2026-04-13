@@ -450,7 +450,7 @@ var adsData = null;
 var currentTab = 'Y';
 
 function loadAdsData() {
-  var url = 'https://docs.google.com/spreadsheets/d/' + SHEET_ID + '/gviz/tq?sheet=最新數據&tqx=out:json';
+var url = 'https://docs.google.com/spreadsheets/d/' + SHEET_ID + '/gviz/tq?sheet=%E6%9C%80%E6%96%B0%E6%95%B8%E6%93%9A&tqx=out:json';  
   fetch(url)
     .then(function(r){ return r.text(); })
     .then(function(text){
@@ -489,7 +489,7 @@ function loadAdsData() {
 }
 
 function loadAiAdvice() {
-  var url = 'https://docs.google.com/spreadsheets/d/' + SHEET_ID + '/gviz/tq?sheet=AI建議&tqx=out:json';
+  var url = 'https://docs.google.com/spreadsheets/d/' + SHEET_ID + '/gviz/tq?sheet=AI%E5%BB%BA%E8%AD%B0&tqx=out:json';
   fetch(url)
     .then(function(r){ return r.text(); })
     .then(function(text){
