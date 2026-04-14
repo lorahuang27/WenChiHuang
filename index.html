@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>銘勁汽車｜行銷成效面板 2026</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-msal-browser/3.5.0/msal-browser.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@azure/msal-browser@3.5.0/lib/msal-browser.min.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100%;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans TC',sans-serif}
@@ -183,7 +183,7 @@ body{background:linear-gradient(135deg,#eceef4 0%,#f5ece8 40%,#e8f0ee 100%);min-
   <div class="sb-section">活動</div>
   <div class="sb-item" onclick="gp('events',this)"><svg viewBox="0 0 14 14"><rect x="1" y="3" width="12" height="10" rx="1.5"/><path d="M4 2v2M10 2v2M1 6h12"/></svg>活動成效</div>
   <div class="sb-item" onclick="gp('tasks',this);initTasksPage()"><svg viewBox="0 0 14 14"><path d="M2 3.5h10M2 7h7M2 10.5h5"/><circle cx="11.5" cy="10.5" r="1.5"/></svg>工作進度</div>
-  <div class="sb-bottom"><div class="sb-item" onclick="openU()"><svg viewBox="0 0 14 14"><path d="M7 9V2M4 5l3-3 3 3M2 11h10"/></svg>上傳資料</div></div>
+  <div class="sb-bottom"></div>
 </div>
 
 <div class="main">
@@ -191,7 +191,6 @@ body{background:linear-gradient(135deg,#eceef4 0%,#f5ece8 40%,#e8f0ee 100%);min-
     <div class="tb-left"><span class="page-title" id="pgTitle">總覽</span></div>
     <div class="tb-right">
       <span class="upd-txt" id="updTxt">資料更新：2026-04-13</span>
-      <button class="btn-up" onclick="openU()"><svg style="width:12px;height:12px;stroke:currentColor;fill:none;stroke-width:1.5" viewBox="0 0 14 14"><path d="M7 9V2M4 5l3-3 3 3M2 11h10"/></svg>上傳資料</button>
     </div>
   </div>
 
@@ -363,13 +362,188 @@ body{background:linear-gradient(135deg,#eceef4 0%,#f5ece8 40%,#e8f0ee 100%);min-
 
     <!-- 粉專 -->
     <div id="pg-fanpage" class="page">
-      <div class="dh"><button class="back" onclick="gp('overview',sbByPg('overview'))">← 總覽</button><span class="dtitle">據點粉專</span></div>
-      <div class="g3">
-        <div class="card" style="border-top:2.5px solid #dc3232"><div style="display:flex;align-items:center;gap:5px;margin-bottom:8px"><div class="sdot" style="background:#dc3232"></div><span style="font-size:12px;font-weight:600">中壢所</span></div><div class="stat" style="margin-bottom:5px"><div class="sl">粉專計分</div><div class="sv" style="color:#dc3232">160 分</div></div><div class="stat"><div class="sl">加碼任務</div><div class="sv" style="color:#16a34a">+20 分</div></div><div class="dv"></div><div class="blank">待串接 Meta API</div></div>
-        <div class="card" style="border-top:2.5px solid #16a34a"><div style="display:flex;align-items:center;gap:5px;margin-bottom:8px"><div class="sdot" style="background:#16a34a"></div><span style="font-size:12px;font-weight:600">八德所</span></div><div class="stat" style="margin-bottom:5px"><div class="sl">粉專計分</div><div class="sv" style="color:#15803d">90 分</div></div><div class="stat"><div class="sl">加碼任務</div><div class="sv" style="color:#16a34a">+20 分</div></div><div class="dv"></div><div class="blank">待串接 Meta API</div></div>
-        <div class="card" style="border-top:2.5px solid #1d4ed8"><div style="display:flex;align-items:center;gap:5px;margin-bottom:8px"><div class="sdot" style="background:#1d4ed8"></div><span style="font-size:12px;font-weight:600">桃園所</span></div><div class="stat" style="margin-bottom:5px"><div class="sl">粉專計分</div><div class="sv" style="color:#1d4ed8">90 分</div></div><div class="stat"><div class="sl">加碼任務</div><div class="sv" style="color:#16a34a">+20 分</div></div><div class="dv"></div><div class="blank">待串接 Meta API</div></div>
+      <div class="dh">
+        <button class="back" onclick="gp('overview',sbByPg('overview'))">← 總覽</button>
+        <span class="dtitle">據點粉專</span>
+        <span class="tag t-green" style="margin-left:auto;font-size:10px" id="fpSyncTime">載入中...</span>
+        <button onclick="fanpageRefresh()" style="padding:4px 10px;background:#fff;border:1px solid #e0e0dc;border-radius:7px;font-size:11px;color:#6b6b68;cursor:pointer;margin-left:4px">重新整理</button>
       </div>
-      <div class="card"><div style="font-size:11px;font-weight:600;color:#1a1a1a;margin-bottom:8px">計分比較（目標 250 分）</div><div style="position:relative;height:165px"><canvas id="cScore" role="img" aria-label="計分比較">計分</canvas></div></div>
+      <div class="sub-tabs" style="margin-bottom:12px">
+        <div class="sub-tab active" onclick="switchFpTab('score',this)">計分總覽</div>
+        <div class="sub-tab" onclick="switchFpTab('reward',this)">打氣金累計</div>
+        <div class="sub-tab" onclick="switchFpTab('health',this)">粉專整體健康度</div>
+        <div class="sub-tab" onclick="switchFpTab('posts',this)">貼文分析</div>
+      </div>
+
+      <!-- ① 計分總覽 -->
+      <div id="fp-score" class="sub-page active">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;flex-wrap:wrap">
+          <span style="font-size:11px;color:#a0a09a">查看月份</span>
+          <select id="fp-score-month" onchange="renderFpScore()" style="padding:4px 10px;background:#fff;border:1px solid #e0e0dc;border-radius:7px;font-size:11px;color:#1a1a1a;outline:none">
+            <option value="2026-04" selected>26年 4月（進行中）</option>
+            <option value="2026-03">26年 3月</option>
+            <option value="2026-02">26年 2月</option>
+            <option value="2026-01">26年 1月</option>
+          </select>
+        </div>
+        <div class="g3" style="margin-bottom:10px">
+          <div class="card" style="border-top:2.5px solid #dc3232;margin-bottom:0">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+              <div style="display:flex;align-items:center;gap:5px"><div class="sdot" style="background:#dc3232"></div><span style="font-size:12px;font-weight:600">中壢所</span></div>
+              <span id="fp-lv-zlj" class="tag t-gray" style="font-size:10px">—</span>
+            </div>
+            <div class="stat" style="margin-bottom:6px"><div class="sl">當月總分</div><div class="sv" style="color:#dc3232" id="fp-sc-zlj">—</div><div class="ss" id="fp-done-zlj">—</div></div>
+            <div id="fp-posts-zlj" style="display:grid;grid-template-columns:repeat(5,1fr);gap:4px;margin-top:6px"></div>
+            <div style="margin-top:8px;background:#ededea;border-radius:3px;height:5px;overflow:hidden"><div id="fp-bar-zlj" style="height:5px;border-radius:3px;background:#dc3232;transition:width .5s"></div></div>
+          </div>
+          <div class="card" style="border-top:2.5px solid #16a34a;margin-bottom:0">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+              <div style="display:flex;align-items:center;gap:5px"><div class="sdot" style="background:#16a34a"></div><span style="font-size:12px;font-weight:600">八德所</span></div>
+              <span id="fp-lv-bds" class="tag t-gray" style="font-size:10px">—</span>
+            </div>
+            <div class="stat" style="margin-bottom:6px"><div class="sl">當月總分</div><div class="sv" style="color:#16a34a" id="fp-sc-bds">—</div><div class="ss" id="fp-done-bds">—</div></div>
+            <div id="fp-posts-bds" style="display:grid;grid-template-columns:repeat(5,1fr);gap:4px;margin-top:6px"></div>
+            <div style="margin-top:8px;background:#ededea;border-radius:3px;height:5px;overflow:hidden"><div id="fp-bar-bds" style="height:5px;border-radius:3px;background:#16a34a;transition:width .5s"></div></div>
+          </div>
+          <div class="card" style="border-top:2.5px solid #1d4ed8;margin-bottom:0">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+              <div style="display:flex;align-items:center;gap:5px"><div class="sdot" style="background:#1d4ed8"></div><span style="font-size:12px;font-weight:600">桃園所</span></div>
+              <span id="fp-lv-tyj" class="tag t-gray" style="font-size:10px">—</span>
+            </div>
+            <div class="stat" style="margin-bottom:6px"><div class="sl">當月總分</div><div class="sv" style="color:#1d4ed8" id="fp-sc-tyj">—</div><div class="ss" id="fp-done-tyj">—</div></div>
+            <div id="fp-posts-tyj" style="display:grid;grid-template-columns:repeat(5,1fr);gap:4px;margin-top:6px"></div>
+            <div style="margin-top:8px;background:#ededea;border-radius:3px;height:5px;overflow:hidden"><div id="fp-bar-tyj" style="height:5px;border-radius:3px;background:#1d4ed8;transition:width .5s"></div></div>
+          </div>
+        </div>
+        <div class="card">
+          <div style="font-size:11px;font-weight:600;color:#1a1a1a;margin-bottom:8px">三所計分比較（目標線 250 分）</div>
+          <div style="position:relative;height:160px"><canvas id="cScore" role="img" aria-label="計分比較">計分</canvas></div>
+        </div>
+        <div class="card">
+          <div style="font-size:11px;font-weight:600;color:#1a1a1a;margin-bottom:4px">計分歷史走勢（2026年）</div>
+          <div style="font-size:10px;color:#a0a09a;margin-bottom:8px">1～3月採舊版規則，4月起採新規則</div>
+          <div style="position:relative;height:150px"><canvas id="cScoreHistory" role="img" aria-label="計分歷史走勢">歷史走勢</canvas></div>
+          <div style="display:flex;gap:12px;margin-top:6px;font-size:10px;color:#a0a09a">
+            <span style="display:flex;align-items:center;gap:3px"><span style="width:10px;height:3px;background:#dc3232;display:inline-block;border-radius:2px"></span>中壢所</span>
+            <span style="display:flex;align-items:center;gap:3px"><span style="width:10px;height:3px;background:#16a34a;display:inline-block;border-radius:2px"></span>八德所</span>
+            <span style="display:flex;align-items:center;gap:3px"><span style="width:10px;height:3px;background:#1d4ed8;display:inline-block;border-radius:2px"></span>桃園所</span>
+          </div>
+        </div>
+        <div class="card" style="background:rgba(255,255,255,.35)">
+          <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#a0a09a;margin-bottom:10px">計分邏輯</div>
+          <div class="g3" style="gap:8px;font-size:11px">
+            <div><div style="font-weight:600;color:#1a1a1a;margin-bottom:4px">執行模式</div><div style="color:#6b6b68;line-height:1.8">A 行銷主導 +10<br>B 共同製作 +30<br>C 據點自主 +50</div></div>
+            <div><div style="font-weight:600;color:#1a1a1a;margin-bottom:4px">準時度</div><div style="color:#6b6b68;line-height:1.8">準時 +10<br>延遲 −20<br><span style="color:#dc3232;font-weight:500">未完成 −30（模式分歸零）</span></div></div>
+            <div><div style="font-weight:600;color:#1a1a1a;margin-bottom:4px">合規性</div><div style="color:#6b6b68;line-height:1.8">完全合規 +10<br>修正後合規 0<br>未送審 −20</div></div>
+          </div>
+          <div style="margin-top:8px;padding:7px 10px;background:rgba(22,163,74,.08);border-radius:7px;font-size:11px;color:#15803d">單篇最高 70 分（C+準時+完全合規）・單月最高約 330～370 分</div>
+          <div style="margin-top:6px;padding:7px 10px;background:rgba(0,0,0,.04);border-radius:7px;font-size:10px;color:#a0a09a">※ 2026年4月起適用以上規則。1～3月採用舊版規則，歷史分數僅供參考。</div>
+        </div>
+      </div>
+
+      <!-- ② 打氣金累計 -->
+      <div id="fp-reward" class="sub-page">
+        <div id="fp-reward-table" style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:10px">
+          <div class="card" style="margin-bottom:0"><div style="font-size:11px;color:#a0a09a;margin-bottom:6px">中壢所</div><div style="font-size:24px;font-weight:700;color:#dc3232" id="rw-cum-zlj">—</div><div id="rw-rows-zlj" style="margin-top:10px"></div></div>
+          <div class="card" style="margin-bottom:0"><div style="font-size:11px;color:#a0a09a;margin-bottom:6px">八德所</div><div style="font-size:24px;font-weight:700;color:#16a34a" id="rw-cum-bds">—</div><div id="rw-rows-bds" style="margin-top:10px"></div></div>
+          <div class="card" style="margin-bottom:0"><div style="font-size:11px;color:#a0a09a;margin-bottom:6px">桃園所</div><div style="font-size:24px;font-weight:700;color:#1d4ed8" id="rw-cum-tyj">—</div><div id="rw-rows-tyj" style="margin-top:10px"></div></div>
+        </div>
+        <div class="card" style="background:rgba(220,50,50,.05);border-color:rgba(220,50,50,.15);margin-bottom:10px">
+          <div style="font-size:10px;color:#a0a09a;margin-bottom:2px">三所累計打氣金合計（25年4月起）</div>
+          <div style="font-size:26px;font-weight:700;color:#dc3232" id="rw-grand">$—</div>
+          <div style="font-size:10px;color:#a0a09a;margin-top:4px">* 當月尚有未評分貼文，金額持續累計中</div>
+        </div>
+        <div class="card" style="margin-bottom:10px">
+          <div style="font-size:11px;font-weight:600;color:#1a1a1a;margin-bottom:8px">打氣金月度走勢（25年4月起）</div>
+          <div style="position:relative;height:165px"><canvas id="cRewardTrend" role="img" aria-label="打氣金走勢">打氣金走勢</canvas></div>
+          <div style="display:flex;gap:12px;margin-top:6px;font-size:10px;color:#a0a09a">
+            <span style="display:flex;align-items:center;gap:3px"><span style="width:10px;height:3px;background:#dc3232;display:inline-block;border-radius:2px"></span>中壢所</span>
+            <span style="display:flex;align-items:center;gap:3px"><span style="width:10px;height:3px;background:#16a34a;display:inline-block;border-radius:2px"></span>八德所</span>
+            <span style="display:flex;align-items:center;gap:3px"><span style="width:10px;height:3px;background:#1d4ed8;display:inline-block;border-radius:2px"></span>桃園所</span>
+          </div>
+        </div>
+        <div class="card" style="background:rgba(255,255,255,.35)">
+          <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#a0a09a;margin-bottom:10px">打氣金規則（MGT 發給銘勁汽車・單月最高 $3,500）</div>
+          <div style="font-size:11px;color:#6b6b68;line-height:2.2">
+            指定貼文（4篇/月完成）<span style="float:right;font-weight:600;color:#1a1a1a">$1,000</span><br>
+            創意短影音（1篇/月完成）<span style="float:right;font-weight:600;color:#1a1a1a">$1,000</span><br>
+            加碼・影片呈現（$200/篇，上限 $1,000，創意短影音不計）<span style="float:right;font-weight:600;color:#1a1a1a">最高 $1,000</span><br>
+            MGT 指定轉發（官方/媒體指定，附10字以上說明）<span style="float:right;font-weight:600;color:#1a1a1a">$500</span>
+          </div>
+          <div style="margin-top:8px;border-top:1px solid rgba(0,0,0,.06);padding-top:8px;font-size:10px;color:#a0a09a">打氣金由總代理依據粉專執行狀況發放，以粉專計分綁 KPI 方式驅動各據點執行。實際金額以 MGT 公告為準。</div>
+        </div>
+      </div>
+
+      <!-- ③ 粉專整體健康度 -->
+      <div id="fp-health" class="sub-page">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">
+          <span style="font-size:11px;color:#a0a09a">查看月份</span>
+          <select id="fp-health-month" onchange="renderFpHealth()" style="padding:4px 10px;background:#fff;border:1px solid #e0e0dc;border-radius:7px;font-size:11px;color:#1a1a1a;outline:none">
+            <option value="2026-04" selected>2026年 4月</option>
+            <option value="2026-03">2026年 3月</option>
+            <option value="2026-02">2026年 2月</option>
+            <option value="2026-01">2026年 1月</option>
+          </select>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:10px">
+          <div class="card" style="border-top:2.5px solid #dc3232;margin-bottom:0"><div style="font-size:11px;font-weight:600;margin-bottom:8px;color:#1a1a1a">中壢所</div><div id="fhk-zlj"></div></div>
+          <div class="card" style="border-top:2.5px solid #16a34a;margin-bottom:0"><div style="font-size:11px;font-weight:600;margin-bottom:8px;color:#1a1a1a">八德所</div><div id="fhk-bds"></div></div>
+          <div class="card" style="border-top:2.5px solid #1d4ed8;margin-bottom:0"><div style="font-size:11px;font-weight:600;margin-bottom:8px;color:#1a1a1a">桃園所</div><div id="fhk-tyj"></div></div>
+        </div>
+        <div class="card" style="margin-bottom:10px">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+            <span style="font-size:11px;font-weight:600;color:#1a1a1a">時序趨勢</span>
+            <div style="display:flex;gap:4px">
+              <button class="tf-btn active" onclick="switchHealthMetric('reach',this)">瀏覽次數</button>
+              <button class="tf-btn" onclick="switchHealthMetric('interaction',this)">互動數</button>
+              <button class="tf-btn" onclick="switchHealthMetric('views3s',this)">3秒觀看</button>
+            </div>
+          </div>
+          <div style="position:relative;height:175px"><canvas id="cFpTrend" role="img" aria-label="粉專趨勢">趨勢</canvas></div>
+          <div style="display:flex;gap:12px;margin-top:6px;font-size:10px;color:#a0a09a">
+            <span style="display:flex;align-items:center;gap:3px"><span style="width:10px;height:3px;background:#dc3232;display:inline-block;border-radius:2px"></span>中壢所</span>
+            <span style="display:flex;align-items:center;gap:3px"><span style="width:10px;height:3px;background:#16a34a;display:inline-block;border-radius:2px"></span>八德所</span>
+            <span style="display:flex;align-items:center;gap:3px"><span style="width:10px;height:3px;background:#1d4ed8;display:inline-block;border-radius:2px"></span>桃園所</span>
+          </div>
+        </div>
+        <div class="blank" id="fp-health-notice">
+          粉專整體數據來源：Meta Business Suite → 內容總覽 → 匯出資料<br>
+          設定：內容層級「粉絲專頁」・資料畫面「每日」・衡量指標「觀眾」<br>
+          匯出後存為 <code style="background:rgba(0,0,0,.06);padding:1px 4px;border-radius:3px">YYYY-MM_粉專整體.csv</code>，放入 SharePoint／營企行銷總覽儀表板／粉專數據／
+        </div>
+      </div>
+
+      <!-- ④ 貼文分析 -->
+      <div id="fp-posts" class="sub-page">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;flex-wrap:wrap">
+          <span style="font-size:11px;color:#a0a09a">月份</span>
+          <select id="fp-posts-month" onchange="renderFpPosts()" style="padding:4px 10px;background:#fff;border:1px solid #e0e0dc;border-radius:7px;font-size:11px;color:#1a1a1a;outline:none">
+            <option value="2026-04" selected>2026年 4月</option>
+            <option value="2026-03">2026年 3月</option>
+          </select>
+          <span style="font-size:11px;color:#a0a09a;margin-left:8px">排序</span>
+          <select id="fp-posts-sort" onchange="renderFpPosts()" style="padding:4px 10px;background:#fff;border:1px solid #e0e0dc;border-radius:7px;font-size:11px;color:#1a1a1a;outline:none">
+            <option value="reach">瀏覽次數</option>
+            <option value="views3s">3秒觀看</option>
+            <option value="interaction">互動數</option>
+            <option value="score">計分</option>
+          </select>
+        </div>
+        <div class="card" style="margin-bottom:10px">
+          <div style="font-size:11px;font-weight:600;color:#1a1a1a;margin-bottom:4px">計分 vs 瀏覽次數</div>
+          <div style="font-size:10px;color:#a0a09a;margin-bottom:8px">高分低觸及 → 合規但吸引力不足｜低分高觸及 → 內容潛力但執行紀律待改善</div>
+          <div style="position:relative;height:200px"><canvas id="cFpScatter" role="img" aria-label="計分與觸及散點圖">散點圖</canvas></div>
+          <div style="display:flex;gap:12px;margin-top:6px;font-size:10px;color:#a0a09a">
+            <span><span style="width:8px;height:8px;border-radius:50%;background:#dc3232;display:inline-block;margin-right:3px"></span>中壢所</span>
+            <span><span style="width:8px;height:8px;border-radius:50%;background:#16a34a;display:inline-block;margin-right:3px"></span>八德所</span>
+            <span><span style="width:8px;height:8px;border-radius:50%;background:#1d4ed8;display:inline-block;margin-right:3px"></span>桃園所</span>
+          </div>
+        </div>
+        <div class="card">
+          <div style="font-size:11px;font-weight:600;color:#1a1a1a;margin-bottom:8px">貼文效益排行</div>
+          <div id="fp-posts-table"><div class="blank">貼文數據來源：Meta Business Suite → 內容 → 所有內容 → 匯出資料<br>設定：內容層級「貼文」・衡量指標「已發佈＋觀眾＋續看率」・日期從月初到今日<br>匯出後存為 <code style="background:rgba(0,0,0,.06);padding:1px 4px;border-radius:3px">YYYY-MM_貼文數據.csv</code>，放入 SharePoint／營企行銷總覽儀表板／粉專數據／</div></div>
+        </div>
+      </div>
     </div>
 
     <!-- CPV -->
@@ -507,15 +681,6 @@ body{background:linear-gradient(135deg,#eceef4 0%,#f5ece8 40%,#e8f0ee 100%);min-
 </div>
 </div>
 
-<div class="uoverlay" id="uModal">
-  <div class="mbox">
-    <div style="font-size:14px;font-weight:700;margin-bottom:12px">上傳資料更新</div>
-    <div class="drop" onclick="document.getElementById('fIn').click()"><input type="file" id="fIn" multiple accept=".xlsx,.csv" style="display:none" onchange="handleF(this.files)"><div style="font-size:12px;color:#6b6b68">點擊或拖曳檔案</div></div>
-    <div id="fList" style="margin-bottom:10px"></div>
-    <div style="display:flex;gap:6px;justify-content:flex-end"><button onclick="closeU()" style="padding:5px 12px;background:#fff;border:1px solid #e0e0dc;border-radius:7px;font-size:11px;cursor:pointer">取消</button><button onclick="confirmU()" style="padding:5px 12px;background:#dc3232;color:#fff;border:none;border-radius:7px;font-size:11px;cursor:pointer">確認</button></div>
-  </div>
-</div>
-
 <style>
 @keyframes spin{to{transform:rotate(360deg)}}
 </style>
@@ -547,16 +712,11 @@ function switchSubTab(id,el){
   }
 }
 function triggerAdsLoad(){if(!adsLoaded){adsLoaded=true;loadAdsData();}}
-function openU(){document.getElementById('uModal').classList.add('open')}
-function closeU(){document.getElementById('uModal').classList.remove('open')}
-document.getElementById('uModal').addEventListener('click',function(e){if(e.target===this)closeU()});
-function handleF(f){var l=document.getElementById('fList');l.innerHTML='';Array.from(f).forEach(function(x){var d=document.createElement('div');d.textContent=x.name;l.appendChild(d);})}
-function confirmU(){closeU();}
 
 // ===== MSAL / 工作進度 =====
 var CLIENT_ID='a8a67f9f-d169-462b-9be7-f98fbde96426';
 var TENANT_ID='6cfd6e7d-2a19-4221-9694-84d6e95ede87';
-var REDIRECT_URI='https://brave-rock-07a52ca10.2.azurestaticapps.net/';
+var REDIRECT_URI='https://mjmotor.z7.web.core.windows.net/marketing/index.html';
 var msalInstance=null, allTasks=[], taskChartInst=null, taskInited=false, timelineMode='upcoming';
 
 var msalCfg={
@@ -576,6 +736,7 @@ window.addEventListener('load', function(){
         var tasksEl=document.getElementById('pg-tasks');
         if(tasksEl){
           taskInited=true;
+          gp('tasks', sbByPg('tasks'));
           show('task-main'); hide('task-loading'); hide('task-login');
           taskLoad();
         }
@@ -603,9 +764,13 @@ async function initTasksPage(){
 
 async function taskSignIn(){
   showTaskErr('');
-  if(!msalInstance){showTaskErr('MSAL 尚未準備好，請稍後再試');return;}
-  try{await msalInstance.loginRedirect({scopes:['Files.Read','Sites.Read.All']});}
-  catch(e){showTaskErr('登入失敗：'+e.message);}
+  try{
+    if(!msalInstance){
+      msalInstance=new msal.PublicClientApplication(msalCfg);
+      await msalInstance.initialize();
+    }
+    await msalInstance.loginRedirect({scopes:['Files.Read','Sites.Read.All']});
+  }catch(e){showTaskErr('登入失敗：'+e.message);}
 }
 
 async function taskRefresh(){
@@ -954,12 +1119,11 @@ function getAgg(){
 }
 function buildCharts(){
   var agg=getAgg();
-  ['cSrc','cDist','cConsid','cMon','cScore'].forEach(dc);
+  ['cSrc','cDist','cConsid','cMon'].forEach(dc);
   charts.cSrc=new Chart(document.getElementById('cSrc'),{type:'doughnut',data:{labels:sLabels,datasets:[{data:agg.src,backgroundColor:sColors,borderWidth:0}]},options:{...def,cutout:'58%'}});
   charts.cDist=new Chart(document.getElementById('cDist'),{type:'bar',data:{labels:dLabels,datasets:[{data:agg.dist,backgroundColor:'#dc3232',borderWidth:0,borderRadius:4}]},options:{...def,scales:{x:{ticks:{color:tc,font:{size:9}},grid:{display:false}},y:{ticks:{color:tc,font:{size:9}},grid:{color:gc}}}}});
   charts.cConsid=new Chart(document.getElementById('cConsid'),{type:'bar',data:{labels:cLabels,datasets:[{data:agg.consid,backgroundColor:'#1d3557',borderWidth:0,borderRadius:3}]},options:{...def,indexAxis:'y',scales:{x:{ticks:{color:tc,font:{size:9}},grid:{color:gc}},y:{ticks:{color:tc,font:{size:9}},grid:{display:false}}}}});
   charts.cMon=new Chart(document.getElementById('cMon'),{type:'line',data:{labels:['1月','2月','3月'],datasets:[{data:agg.m,borderColor:'#dc3232',backgroundColor:'rgba(220,50,50,.08)',fill:true,tension:.35,pointRadius:4,pointBackgroundColor:'#dc3232'}]},options:{...def,scales:{x:{ticks:{color:tc,font:{size:9}},grid:{display:false}},y:{ticks:{color:tc,font:{size:9}},grid:{color:gc}}}}});
-  charts.cScore=new Chart(document.getElementById('cScore'),{type:'bar',data:{labels:['中壢所','八德所','桃園所'],datasets:[{data:[160,90,90],backgroundColor:['#dc3232','#16a34a','#1d4ed8'],borderWidth:0,borderRadius:6,barThickness:44}]},options:{...def,scales:{x:{ticks:{color:tc,font:{size:10}},grid:{display:false}},y:{min:0,max:330,ticks:{color:tc,font:{size:9}},grid:{color:gc}}}}});
   document.getElementById('vTot').textContent=agg.total;
   document.getElementById('vUniq').textContent=agg.uniq;
 }
@@ -971,6 +1135,292 @@ function calcCPV(){
   document.getElementById('totalBudget').textContent='$'+totalFee.toLocaleString();
   document.getElementById('totalCPV').textContent=totalVis>0?'$'+Math.round(totalFeeV/totalVis):'—';
 }
+
+// ===== 粉專面板 =====
+var fpScoreData=null, fpHealthData={}, fpPostsData={}, fpHealthMetric='reach';
+var fpTrendChart=null, fpScatterChart=null, fpRewardChart=null, fpScoreHistChart=null;
+var REWARD_RATE={'優秀':3000,'穩定':2000,'基本':1000,'未達':0};
+var FP_BONUS={'中壢所':20,'八德所':20,'桃園所':20};
+var FP_KEYS=[{key:'zlj',name:'中壢所',color:'#dc3232'},{key:'bds',name:'八德所',color:'#16a34a'},{key:'tyj',name:'桃園所',color:'#1d4ed8'}];
+
+var FP_HIST_SCORES={'2026-01':{'中壢所':295,'八德所':230,'桃園所':290},'2026-02':{'中壢所':195,'八德所':210,'桃園所':70},'2026-03':{'中壢所':200,'八德所':190,'桃園所':220}};
+var FP_HIST_REWARDS=[
+  {label:'25/4',r:{'中壢所':1550,'八德所':1300,'桃園所':1650}},
+  {label:'25/5',r:{'中壢所':2150,'八德所':2450,'桃園所':2500}},
+  {label:'25/6',r:{'中壢所':2050,'八德所':3050,'桃園所':2550}},
+  {label:'25/7',r:{'中壢所':2300,'八德所':2800,'桃園所':1850}},
+  {label:'25/8',r:{'中壢所':2600,'八德所':2700,'桃園所':2050}},
+  {label:'25/9',r:{'中壢所':1850,'八德所':2350,'桃園所':2400}},
+  {label:'25/10',r:{'中壢所':2500,'八德所':2800,'桃園所':1950}},
+  {label:'25/11',r:{'中壢所':1500,'八德所':2100,'桃園所':1700}},
+  {label:'25/12',r:{'中壢所':2250,'八德所':2350,'桃園所':1900}},
+  {label:'26/1',r:{'中壢所':3050,'八德所':2200,'桃園所':2950}},
+  {label:'26/2',r:{'中壢所':200,'八德所':2200,'桃園所':1400}},
+  {label:'26/3',r:{'中壢所':2800,'八德所':2400,'桃園所':2400}},
+  {label:'26/4*',r:null}
+];
+
+function getFpLevel(sc){if(sc>=300)return'優秀';if(sc>=250)return'穩定';if(sc>=200)return'基本';return'未達';}
+function calcRewardByScore(sc){return REWARD_RATE[getFpLevel(sc)]||0;}
+function calcFpTotal(posts,bonus){return posts.reduce(function(s,p){return s+(p.score||0);},0)+(bonus||0);}
+function fpLevelTag(lvl){var cls={優秀:'t-green',穩定:'t-blue',基本:'t-amber',未達:'t-gray'}[lvl]||'t-gray';return '<span class="tag '+cls+'" style="font-size:10px">'+lvl+'</span>';}
+
+function getFpHardcode(){
+  return {
+    '中壢所':[
+      {week:'W1',topic:'連假出遊遇塞車',score:70,timing:'準時',comply:'完全合規'},
+      {week:'W2',topic:'座享幸福版',score:70,timing:'準時',comply:'完全合規'},
+      {week:'W3',topic:'422地球日',score:70,timing:'準時',comply:'完全合規'},
+      {week:'W4',topic:'新手打BOSS豪華配',score:null,timing:'-',comply:'-'},
+      {week:'W5',topic:'MG業務的日常',score:null,timing:'-',comply:'-'},
+    ],
+    '八德所':[
+      {week:'W1',topic:'連假出遊遇塞車',score:70,timing:'準時',comply:'完全合規'},
+      {week:'W2',topic:'座享幸福版',score:70,timing:'準時',comply:'完全合規'},
+      {week:'W3',topic:'422地球日',score:null,timing:'-',comply:'-'},
+      {week:'W4',topic:'巷弄會車超崩潰',score:null,timing:'-',comply:'-'},
+      {week:'W5',topic:'車門隱藏機關',score:null,timing:'-',comply:'-'},
+    ],
+    '桃園所':[
+      {week:'W1',topic:'連假出遊遇塞車',score:70,timing:'準時',comply:'完全合規'},
+      {week:'W2',topic:'座享幸福版',score:70,timing:'準時',comply:'完全合規'},
+      {week:'W3',topic:'422地球日',score:40,timing:'準時',comply:'未送審'},
+      {week:'W4',topic:'老一輩VS新鮮人',score:null,timing:'-',comply:'-'},
+      {week:'W5',topic:'MG業務都怎麼開車',score:null,timing:'-',comply:'-'},
+    ]
+  };
+}
+
+function renderFpScore(){
+  var selMonth=document.getElementById('fp-score-month')?document.getElementById('fp-score-month').value:'2026-04';
+  var isCurrent=(selMonth==='2026-04');
+  var data=fpScoreData||getFpHardcode();
+  var maxScore=isCurrent?370:330;
+  FP_KEYS.forEach(function(k){
+    var total,posts;
+    if(isCurrent){
+      posts=data[k.name]||[];
+      total=calcFpTotal(posts,FP_BONUS[k.name]||0);
+    } else {
+      total=FP_HIST_SCORES[selMonth]?(FP_HIST_SCORES[selMonth][k.name]||0):0;
+      posts=null;
+    }
+    var lvl=getFpLevel(total);
+    var pct=Math.min(100,Math.round(total/maxScore*100));
+    var lvlCls={優秀:'t-green',穩定:'t-blue',基本:'t-amber',未達:'t-gray'}[lvl]||'t-gray';
+    setText('fp-sc-'+k.key,total+' 分');
+    setText('fp-done-'+k.key,isCurrent?'已評 '+(posts?posts.filter(function(p){return p.score!==null;}).length:0)+'/'+(posts?posts.length:5)+' 篇・加碼 +'+(FP_BONUS[k.name]||0):'月度最終分數');
+    var lvlEl=document.getElementById('fp-lv-'+k.key);
+    if(lvlEl){lvlEl.className='tag '+lvlCls;lvlEl.style.fontSize='10px';lvlEl.textContent=lvl;}
+    document.getElementById('fp-bar-'+k.key).style.width=pct+'%';
+    var postsEl=document.getElementById('fp-posts-'+k.key);
+    if(isCurrent&&posts){
+      postsEl.innerHTML=posts.map(function(p){
+        var bg=p.score===null?'rgba(0,0,0,.06)':p.score>=60?'rgba(22,163,74,.12)':p.score>=0?'rgba(245,158,11,.12)':'rgba(220,50,50,.12)';
+        var fc=p.score===null?'#a0a09a':p.score>=60?'#15803d':p.score>=0?'#b45309':'#dc3232';
+        return '<div style="background:'+bg+';border-radius:5px;padding:5px 3px;text-align:center" title="'+p.topic+'"><div style="font-size:9px;color:#a0a09a">'+p.week+'</div><div style="font-size:14px;font-weight:700;color:'+fc+'">'+(p.score!==null?p.score:'—')+'</div></div>';
+      }).join('');
+    } else {
+      postsEl.innerHTML='<div style="grid-column:1/-1;padding:8px 4px;font-size:10px;color:#a0a09a;background:rgba(0,0,0,.04);border-radius:6px;text-align:center">此月份採用舊版計分規則，僅提供月度總分</div>';
+    }
+  });
+  // 比較圖
+  var scores=FP_KEYS.map(function(k){return isCurrent?calcFpTotal((fpScoreData||getFpHardcode())[k.name]||[],FP_BONUS[k.name]||0):(FP_HIST_SCORES[selMonth]?FP_HIST_SCORES[selMonth][k.name]:0);});
+  dc('cScore');
+  charts.cScore=new Chart(document.getElementById('cScore'),{type:'bar',data:{labels:['中壢所','八德所','桃園所'],datasets:[{data:scores,backgroundColor:['#dc3232','#16a34a','#1d4ed8'],borderWidth:0,borderRadius:6,barThickness:44}]},options:{...def,scales:{x:{ticks:{color:tc,font:{size:10}},grid:{display:false}},y:{min:0,max:maxScore,ticks:{color:tc,font:{size:9}},grid:{color:gc}}}}});
+  renderFpScoreHistory();
+}
+
+function renderFpScoreHistory(){
+  var cur4={};
+  FP_KEYS.forEach(function(k){cur4[k.name]=calcFpTotal((fpScoreData||getFpHardcode())[k.name]||[],FP_BONUS[k.name]||0);});
+  var labels=['1月','2月','3月','4月*'];
+  var months=['2026-01','2026-02','2026-03','2026-04'];
+  if(fpScoreHistChart){fpScoreHistChart.destroy();fpScoreHistChart=null;}
+  fpScoreHistChart=new Chart(document.getElementById('cScoreHistory'),{type:'line',data:{labels:labels,datasets:FP_KEYS.map(function(k){return{label:k.name,data:months.map(function(m){return m==='2026-04'?cur4[k.name]:(FP_HIST_SCORES[m]?FP_HIST_SCORES[m][k.name]:null);}),borderColor:k.color,backgroundColor:'transparent',pointBackgroundColor:k.color,tension:.35,borderWidth:2,pointRadius:4,segment:{borderDash:function(ctx){return ctx.p1DataIndex===3?[4,3]:undefined;}}};})},options:{...def,scales:{x:{ticks:{color:tc,font:{size:9}},grid:{display:false}},y:{min:0,suggestedMax:330,ticks:{color:tc,font:{size:9},callback:function(v){return v+' 分';}},grid:{color:gc}}}}});
+}
+
+function renderFpReward(){
+  var data=fpScoreData||getFpHardcode();
+  var grandTotal=0;
+  FP_KEYS.forEach(function(k){
+    var cum=0;
+    var rows=FP_HIST_REWARDS.map(function(m){
+      var rw;
+      if(m.r){rw=m.r[k.name]||0;}
+      else{rw=calcRewardByScore(calcFpTotal((data[k.name]||[]),FP_BONUS[k.name]||0));}
+      cum+=rw;
+      return '<div class="tr"><span style="color:#6b7280">'+m.label+'</span><span style="font-weight:600;margin-left:auto">$'+rw.toLocaleString()+'</span></div>';
+    }).join('');
+    grandTotal+=cum;
+    setText('rw-cum-'+k.key,'$'+cum.toLocaleString());
+    var el=document.getElementById('rw-rows-'+k.key);
+    if(el)el.innerHTML=rows;
+  });
+  setText('rw-grand','$'+grandTotal.toLocaleString());
+}
+
+function renderFpRewardTrend(){
+  if(fpRewardChart){fpRewardChart.destroy();fpRewardChart=null;}
+  var data=fpScoreData||getFpHardcode();
+  var labels=FP_HIST_REWARDS.map(function(m){return m.label;});
+  fpRewardChart=new Chart(document.getElementById('cRewardTrend'),{type:'line',data:{labels:labels,datasets:FP_KEYS.map(function(k){return{label:k.name,data:FP_HIST_REWARDS.map(function(m){return m.r?m.r[k.name]:calcRewardByScore(calcFpTotal((data[k.name]||[]),FP_BONUS[k.name]||0));}),borderColor:k.color,backgroundColor:'transparent',pointBackgroundColor:k.color,tension:.3,borderWidth:2,pointRadius:3};})},options:{...def,scales:{x:{ticks:{color:tc,font:{size:9},maxRotation:45},grid:{display:false}},y:{min:0,suggestedMax:3500,ticks:{color:tc,font:{size:9},callback:function(v){return'$'+v;}},grid:{color:gc}}}}});
+}
+
+var FP_HEALTH_METRICS=[
+  {label:'瀏覽次數',keys:['瀏覽次數','Impressions','reach'],key:'reach'},
+  {label:'觀看 3 秒以上',keys:['觀看3秒以上的次數','3-Second Video Views'],key:'views3s'},
+  {label:'觀看 1 分鐘以上',keys:['觀看1分鐘以上的次數','1-Minute Video Views'],key:'views1m'},
+  {label:'內容互動總數',keys:['內容互動總數','Post Engagements','interaction'],key:'interaction'},
+];
+
+function getFpMetricVal(row,keys){for(var i=0;i<keys.length;i++){var v=row[keys[i]];if(v!==undefined&&v!=='')return Number(String(v).replace(/,/g,''))||0;}return null;}
+
+function renderFpHealth(){
+  var month=document.getElementById('fp-health-month').value;
+  var hData=fpHealthData[month];
+  FP_KEYS.forEach(function(k){
+    var el=document.getElementById('fhk-'+k.key);
+    if(!hData||!hData.length){el.innerHTML='<div class="blank" style="font-size:10px">待上傳 '+month+' 粉專整體.csv</div>';return;}
+    var rows=hData.filter(function(r){var n=r['粉絲專頁名稱']||r['Page Name']||'';return n.includes(k.name.replace('所',''));});
+    var totals={};
+    FP_HEALTH_METRICS.forEach(function(m){totals[m.key]=rows.reduce(function(s,r){return s+(getFpMetricVal(r,m.keys)||0);},0);});
+    el.innerHTML=FP_HEALTH_METRICS.map(function(m){var v=totals[m.key];return'<div class="stat" style="margin-bottom:5px"><div class="sl">'+m.label+'</div><div class="sv" style="font-size:15px">'+(v>0?v.toLocaleString():'—')+'</div></div>';}).join('');
+  });
+  renderFpTrend();
+}
+
+function renderFpTrend(){
+  var allMonths=['2026-01','2026-02','2026-03','2026-04'];
+  var avail=allMonths.filter(function(m){return fpHealthData[m]&&fpHealthData[m].length>0;});
+  var metricDef=FP_HEALTH_METRICS.find(function(m){return m.key===fpHealthMetric;})||FP_HEALTH_METRICS[0];
+  var notice=document.getElementById('fp-health-notice');
+  if(notice)notice.style.display=avail.length?'none':'block';
+  if(fpTrendChart){fpTrendChart.destroy();fpTrendChart=null;}
+  var labels=avail.length?avail.map(function(m){return m.replace('2026-','')+'月';}):[' 1月',' 2月',' 3月',' 4月'];
+  var datasets=FP_KEYS.map(function(k){
+    var data=avail.length?avail.map(function(m){var rows=(fpHealthData[m]||[]).filter(function(r){var n=r['粉絲專頁名稱']||'';return n.includes(k.name.replace('所',''));});return rows.reduce(function(s,r){return s+(getFpMetricVal(r,metricDef.keys)||0);},0)||null;}):[null,null,null,null];
+    return{label:k.name,data:data,borderColor:k.color,backgroundColor:'transparent',pointBackgroundColor:k.color,tension:.35,borderWidth:2,pointRadius:4,borderDash:avail.length?[]:[4,3]};
+  });
+  fpTrendChart=new Chart(document.getElementById('cFpTrend'),{type:'line',data:{labels:labels,datasets:datasets},options:{...def,scales:{x:{ticks:{color:tc,font:{size:9}},grid:{display:false}},y:{ticks:{color:tc,font:{size:9}},grid:{color:gc}}}}});
+}
+
+function switchHealthMetric(m,el){
+  fpHealthMetric=m;
+  document.querySelectorAll('[onclick^="switchHealthMetric"]').forEach(function(b){b.classList.remove('active');});
+  el.classList.add('active');
+  renderFpTrend();
+}
+
+function renderFpPosts(){
+  var month=document.getElementById('fp-posts-month').value;
+  var sort=document.getElementById('fp-posts-sort').value;
+  var pData=fpPostsData[month];
+  var scoreData=fpScoreData||getFpHardcode();
+  if(fpScatterChart){fpScatterChart.destroy();fpScatterChart=null;}
+  var scatterDatasets=FP_KEYS.map(function(k){
+    var posts=scoreData[k.name]||[];
+    var points=posts.filter(function(p){return p.score!==null;}).map(function(p,i){
+      var reach=0;
+      if(pData&&pData.length){var pRow=(pData.filter(function(r){var n=r['粉絲專頁名稱']||'';return n.includes(k.name.replace('所',''));})||[])[i];if(pRow)reach=getFpMetricVal(pRow,['瀏覽次數','Impressions'])||0;}
+      return{x:p.score,y:reach,label:p.week};
+    });
+    return{label:k.name,data:points,backgroundColor:k.color,pointRadius:7,pointHoverRadius:9};
+  });
+  fpScatterChart=new Chart(document.getElementById('cFpScatter'),{type:'scatter',data:{datasets:scatterDatasets},options:{...def,plugins:{...def.plugins,tooltip:{callbacks:{label:function(c){return c.dataset.label+' '+c.raw.label+': 計分'+c.raw.x+'・觸及'+(c.raw.y||0).toLocaleString();}}}},scales:{x:{title:{display:true,text:'計分',color:tc,font:{size:9}},ticks:{color:tc,font:{size:9}},grid:{color:gc}},y:{title:{display:true,text:'瀏覽次數',color:tc,font:{size:9}},ticks:{color:tc,font:{size:9}},grid:{color:gc}}}}});
+  var tableEl=document.getElementById('fp-posts-table');
+  if(!pData||!pData.length){tableEl.innerHTML='<div class="blank">貼文數據來源：Meta Business Suite → 內容 → 所有內容 → 匯出資料<br>設定：內容層級「貼文」・衡量指標「已發佈＋觀眾＋續看率」・日期從月初到今日<br>匯出後存為 <code style="background:rgba(0,0,0,.06);padding:1px 4px;border-radius:3px">'+month+'_貼文數據.csv</code>，放入 SharePoint／營企行銷總覽儀表板／粉專數據／</div>';return;}
+  var allPosts=pData.map(function(r){
+    var n=r['粉絲專頁名稱']||r['Page Name']||'';
+    var branch=n.includes('中壢')?'中壢所':n.includes('八德')?'八德所':n.includes('桃園')?'桃園所':'其他';
+    var color={'中壢所':'#dc3232','八德所':'#16a34a','桃園所':'#1d4ed8','其他':'#a0a09a'}[branch];
+    var reach=getFpMetricVal(r,['瀏覽次數','Impressions'])||0;
+    var v3s=getFpMetricVal(r,['觀看3秒以上的次數','3-Second Video Views'])||0;
+    var inter=getFpMetricVal(r,['內容互動總數','Post Engagements'])||0;
+    var title=(r['貼文說明']||r['Post Description']||'—');
+    return{branch:branch,color:color,title:title.substring(0,20)+(title.length>20?'…':''),reach:reach,views3s:v3s,interaction:inter};
+  });
+  allPosts.sort(function(a,b){return(b[sort]||0)-(a[sort]||0);});
+  tableEl.innerHTML='<table style="width:100%;border-collapse:collapse;font-size:11px"><thead><tr style="border-bottom:1px solid #ededea"><th style="text-align:left;padding:5px 6px;color:#a0a09a;font-size:9px">據點</th><th style="text-align:left;padding:5px 6px;color:#a0a09a;font-size:9px">貼文</th><th style="text-align:right;padding:5px 6px;color:#a0a09a;font-size:9px">瀏覽</th><th style="text-align:right;padding:5px 6px;color:#a0a09a;font-size:9px">3秒</th><th style="text-align:right;padding:5px 6px;color:#a0a09a;font-size:9px">互動</th></tr></thead><tbody>'+
+  allPosts.slice(0,15).map(function(p){return'<tr style="border-bottom:1px solid #f5f5f2"><td style="padding:6px"><span class="sdot" style="background:'+p.color+';display:inline-block;vertical-align:middle;margin-right:3px"></span><span style="font-size:10px;color:'+p.color+'">'+p.branch+'</span></td><td style="padding:6px;color:#1a1a1a;max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+p.title+'</td><td style="text-align:right;padding:6px;font-weight:600">'+p.reach.toLocaleString()+'</td><td style="text-align:right;padding:6px;color:#6b7280">'+p.views3s.toLocaleString()+'</td><td style="text-align:right;padding:6px;color:#6b7280">'+p.interaction.toLocaleString()+'</td></tr>';}).join('')+'</tbody></table>';
+}
+
+function parseCSVRow(line){var result=[],cur='',inQ=false;for(var i=0;i<line.length;i++){var c=line[i];if(c==='"'){inQ=!inQ;}else if(c===','&&!inQ){result.push(cur);cur='';}else{cur+=c;}}result.push(cur);return result;}
+function parseFpHealthCSV(text){var lines=text.trim().split('\n');if(lines.length<2)return[];var header=parseCSVRow(lines[0]);return lines.slice(1).map(function(line){var row=parseCSVRow(line);var obj={};header.forEach(function(h,i){obj[h.trim()]=row[i]||'';});return obj;}).filter(function(r){return r['粉絲專頁名稱']||r['Page Name'];});}
+function parseFpPostsCSV(text){var lines=text.trim().split('\n');if(lines.length<2)return[];var header=parseCSVRow(lines[0]);return lines.slice(1).map(function(line){var row=parseCSVRow(line);var obj={};header.forEach(function(h,i){obj[h.trim()]=row[i]||'';});return obj;}).filter(function(r){return r['貼文說明']||r['Post Description'];});}
+
+function parseFpScoreSheet(values){
+  if(!values||values.length<2)return null;
+  var header=values[3];
+  function hi(k){return header?header.findIndex(function(h){return String(h).includes(k);}):(-1);}
+  var iName=hi('據點'),iWeek=hi('貼文編號'),iTopic=hi('主題'),iMode=hi('模式'),iTotal=hi('單篇總分'),iTiming=hi('準時度'),iComply=hi('合規');
+  var result={'中壢所':[],'八德所':[],'桃園所':[]};
+  for(var r=4;r<values.length;r++){
+    var row=values[r];var name=String(row[iName]||'').trim();
+    if(!result[name])continue;
+    result[name].push({week:String(row[iWeek]||'').replace(/\s*\(.+\)/,'').trim(),topic:String(row[iTopic]||''),mode:String(row[iMode]||''),timing:String(row[iTiming]||''),comply:String(row[iComply]||''),score:row[iTotal]!=null?Number(row[iTotal]):null});
+  }
+  return result;
+}
+
+async function fanpageLoad(){
+  setFpSync('同步中...');
+  try{
+    var token=await getTaskToken();
+    var driveRes=await fetch('https://graph.microsoft.com/v1.0/sites/fetcb107004.sharepoint.com:/sites/op0:/drive',{headers:{Authorization:'Bearer '+token}});
+    var driveData=await driveRes.json();
+    var driveId=driveData.id;
+    var basePath='General/營企行銷/營企行銷總覽儀表板';
+    // 計分 xlsx
+    var scoreRes=await fetch('https://graph.microsoft.com/v1.0/drives/'+driveId+'/root:/'+basePath+'/粉專經營計分表/粉專經營規劃與計分表_2026_04.xlsx:/workbook/worksheets',{headers:{Authorization:'Bearer '+token}});
+    var sheetsData=await scoreRes.json();
+    var detailSheet=sheetsData.value&&sheetsData.value.find(function(s){return s.name.includes('單篇明細');});
+    if(detailSheet){
+      var dRes=await fetch('https://graph.microsoft.com/v1.0/drives/'+driveId+'/root:/'+basePath+'/粉專經營計分表/粉專經營規劃與計分表_2026_04.xlsx:/workbook/worksheets/'+encodeURIComponent(detailSheet.name)+'/usedRange',{headers:{Authorization:'Bearer '+token}});
+      var dData=await dRes.json();
+      fpScoreData=parseFpScoreSheet(dData.values);
+    }
+    // CSV
+    for(var mi=0;mi<['2026-04','2026-03'].length;mi++){
+      var mo=['2026-04','2026-03'][mi];
+      for(var ti=0;ti<['health','posts'].length;ti++){
+        var type=['health','posts'][ti];
+        var fname=mo+'_'+(type==='health'?'粉專整體':'貼文數據')+'.csv';
+        try{
+          var cr=await fetch('https://graph.microsoft.com/v1.0/drives/'+driveId+'/root:/'+basePath+'/粉專數據/'+encodeURIComponent(fname)+':/content',{headers:{Authorization:'Bearer '+token}});
+          if(cr.ok){var ct=await cr.text();if(type==='health')fpHealthData[mo]=parseFpHealthCSV(ct);else fpPostsData[mo]=parseFpPostsCSV(ct);}
+        }catch(e){console.warn('skip',fname);}
+      }
+    }
+    renderFpScore();renderFpReward();renderFpHealth();renderFpPosts();
+    var now=new Date();setFpSync('同步於 '+(now.getMonth()+1)+'/'+now.getDate()+' '+String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0'));
+  }catch(e){
+    setFpSync('SharePoint 未連線，顯示快取數據');
+    console.warn('fanpageLoad:',e);
+    fpScoreData=getFpHardcode();
+    renderFpScore();renderFpReward();renderFpHealth();renderFpPosts();
+  }
+}
+
+function fanpageRefresh(){
+  if(msalInstance&&msalInstance.getAllAccounts().length>0){fanpageLoad();}
+  else{fpScoreData=getFpHardcode();renderFpScore();renderFpReward();renderFpHealth();renderFpPosts();setFpSync('未登入（顯示快取數據）');}
+}
+
+function setFpSync(txt){var e=document.getElementById('fpSyncTime');if(e)e.textContent=txt;}
+
+function switchFpTab(name,el){
+  document.querySelectorAll('#pg-fanpage .sub-page').forEach(function(p){p.classList.remove('active');});
+  document.querySelectorAll('#pg-fanpage .sub-tab').forEach(function(t){t.classList.remove('active');});
+  document.getElementById('fp-'+name).classList.add('active');
+  el.classList.add('active');
+  if(name==='reward')setTimeout(renderFpRewardTrend,50);
+}
+
+var fpLoaded=false;
+var _origGp=gp;
+gp=function(id,el){_origGp(id,el);if(id==='fanpage'&&!fpLoaded){fpLoaded=true;fanpageRefresh();}};
+
 buildCharts();
 </script>
 </body>
