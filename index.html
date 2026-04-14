@@ -671,7 +671,7 @@ body{background:linear-gradient(135deg,#eceef4 0%,#f5ece8 40%,#e8f0ee 100%);min-
       </div>
 
       <!-- 載入中 -->
-      <div id="task-loading" style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:200px;gap:10px;color:#a0a09a;font-size:13px">
+      <div id="task-loading" style="display:block;text-align:center;padding:40px 20px;color:#a0a09a;font-size:13px">
         <div style="width:20px;height:20px;border:2px solid #ededea;border-top-color:#1a1a1a;border-radius:50%;animation:spin .8s linear infinite"></div>
         連接 Microsoft 365 中...
       </div>
@@ -732,14 +732,17 @@ window.addEventListener('load', function(){
       return msalInstance.handleRedirectPromise();
     }).then(function(resp){
       if(resp){
-        // 登入後跳回，自動進入工作進度頁
-        var tasksEl=document.getElementById('pg-tasks');
-        if(tasksEl){
+        // 登入後跳回：等 DOM 與所有 JS（含 fanpage wrapper）都就緒後再執行
+        setTimeout(function(){
           taskInited=true;
-          gp('tasks', sbByPg('tasks'));
-          show('task-main'); hide('task-loading'); hide('task-login');
-          taskLoad();
-        }
+          // 使用全域 gp（此時已被 fanpage wrapper 覆寫）
+          var tasksEl=document.getElementById('pg-tasks');
+          if(tasksEl){
+            gp('tasks', sbByPg('tasks'));
+            show('task-main'); hide('task-loading'); hide('task-login');
+            taskLoad();
+          }
+        }, 0);
       }
     }).catch(function(e){console.warn('MSAL redirect handle:',e);});
   }catch(e){
@@ -791,20 +794,28 @@ async function taskLoad(){
   setTaskSync('同步中...');
   try{
     var token=await getTaskToken();
+    // 先用 site ID 取 drive，確保 drive ID 正確
     var driveRes=await fetch('https://graph.microsoft.com/v1.0/sites/fetcb107004.sharepoint.com:/sites/op0:/drive',{headers:{Authorization:'Bearer '+token}});
     var driveData=await driveRes.json();
+    if(!driveData.id){throw new Error('無法取得 Drive ID: '+JSON.stringify(driveData));}
     var driveId=driveData.id;
-    var sheetsRes=await fetch('https://graph.microsoft.com/v1.0/drives/'+driveId+'/root:/General/營企行銷/營企行銷總覽儀表板/2026營企行銷工作進度.xlsx:/workbook/worksheets',{headers:{Authorization:'Bearer '+token}});
+    // 工作進度 xlsx - 使用 encodeURIComponent 確保中文路徑正確
+    var filePath='General/營企行銷/營企行銷總覽儀表板/2026營企行銷工作進度.xlsx';
+    var fileUrl='https://graph.microsoft.com/v1.0/drives/'+driveId+'/root:/'+encodeURIComponent(filePath).replace(/%2F/g,'/')+':/workbook/worksheets';
+    var sheetsRes=await fetch(fileUrl,{headers:{Authorization:'Bearer '+token}});
     var sheetsData=await sheetsRes.json();
-    var sheetName=sheetsData.value&&sheetsData.value[0]?sheetsData.value[0].name:'Sheet1';
-    var rangeRes=await fetch('https://graph.microsoft.com/v1.0/drives/'+driveId+'/root:/General/營企行銷/營企行銷總覽儀表板/2026營企行銷工作進度.xlsx:/workbook/worksheets/'+encodeURIComponent(sheetName)+'/usedRange',{headers:{Authorization:'Bearer '+token}});
+    if(!sheetsData.value){throw new Error('無法讀取工作表: '+JSON.stringify(sheetsData));}
+    var sheetName=sheetsData.value[0]?sheetsData.value[0].name:'Sheet1';
+    var rangeUrl='https://graph.microsoft.com/v1.0/drives/'+driveId+'/root:/'+encodeURIComponent(filePath).replace(/%2F/g,'/')+':/workbook/worksheets/'+encodeURIComponent(sheetName)+'/usedRange';
+    var rangeRes=await fetch(rangeUrl,{headers:{Authorization:'Bearer '+token}});
     var rangeData=await rangeRes.json();
+    if(!rangeData.values){throw new Error('無法讀取資料範圍: '+JSON.stringify(rangeData));}
     parseTaskRows(rangeData.values);
     var now=new Date();
-    setTaskSync('同步於 '+now.getMonth()+1+'/'+now.getDate()+' '+String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0'));
+    setTaskSync('同步於 '+(now.getMonth()+1)+'/'+now.getDate()+' '+String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0'));
   }catch(e){
-    setTaskSync('載入失敗');
-    console.error(e);
+    setTaskSync('載入失敗：'+e.message.substring(0,40));
+    console.error('taskLoad error:',e);
   }
 }
 
@@ -953,7 +964,13 @@ function renderPerfLink(){
   }).join('');
 }
 
-function show(id){var e=document.getElementById(id);if(e)e.style.display='flex';}
+function show(id){
+  var e=document.getElementById(id);
+  if(!e)return;
+  // block 容器用 block，其他（loading spinner 等）用 flex
+  var blockIds=['task-main','task-login'];
+  e.style.display=blockIds.indexOf(id)>-1?'block':'flex';
+}
 function hide(id){var e=document.getElementById(id);if(e)e.style.display='none';}
 function setText(id,v){var e=document.getElementById(id);if(e)e.textContent=v;}
 function setTaskSync(txt){var e=document.getElementById('taskSyncTime');if(e)e.textContent=txt;}
@@ -1369,31 +1386,39 @@ async function fanpageLoad(){
     var token=await getTaskToken();
     var driveRes=await fetch('https://graph.microsoft.com/v1.0/sites/fetcb107004.sharepoint.com:/sites/op0:/drive',{headers:{Authorization:'Bearer '+token}});
     var driveData=await driveRes.json();
+    if(!driveData.id){throw new Error('Drive ID error');}
     var driveId=driveData.id;
-    var basePath='General/營企行銷/營企行銷總覽儀表板';
+    var base='General/營企行銷/營企行銷總覽儀表板';
+    function graphPath(p){return'https://graph.microsoft.com/v1.0/drives/'+driveId+'/root:/'+encodeURIComponent(p).replace(/%2F/g,'/');}
+
     // 計分 xlsx
-    var scoreRes=await fetch('https://graph.microsoft.com/v1.0/drives/'+driveId+'/root:/'+basePath+'/粉專經營計分表/粉專經營規劃與計分表_2026_04.xlsx:/workbook/worksheets',{headers:{Authorization:'Bearer '+token}});
+    var scorePath=base+'/粉專經營計分表/粉專經營規劃與計分表_2026_04.xlsx';
+    var scoreRes=await fetch(graphPath(scorePath)+':/workbook/worksheets',{headers:{Authorization:'Bearer '+token}});
     var sheetsData=await scoreRes.json();
     var detailSheet=sheetsData.value&&sheetsData.value.find(function(s){return s.name.includes('單篇明細');});
     if(detailSheet){
-      var dRes=await fetch('https://graph.microsoft.com/v1.0/drives/'+driveId+'/root:/'+basePath+'/粉專經營計分表/粉專經營規劃與計分表_2026_04.xlsx:/workbook/worksheets/'+encodeURIComponent(detailSheet.name)+'/usedRange',{headers:{Authorization:'Bearer '+token}});
+      var dRes=await fetch(graphPath(scorePath)+':/workbook/worksheets/'+encodeURIComponent(detailSheet.name)+'/usedRange',{headers:{Authorization:'Bearer '+token}});
       var dData=await dRes.json();
-      fpScoreData=parseFpScoreSheet(dData.values);
+      if(dData.values) fpScoreData=parseFpScoreSheet(dData.values);
     }
-    // CSV
-    for(var mi=0;mi<['2026-04','2026-03'].length;mi++){
-      var mo=['2026-04','2026-03'][mi];
-      for(var ti=0;ti<['health','posts'].length;ti++){
-        var type=['health','posts'][ti];
-        var fname=mo+'_'+(type==='health'?'粉專整體':'貼文數據')+'.csv';
-        try{
-          var cr=await fetch('https://graph.microsoft.com/v1.0/drives/'+driveId+'/root:/'+basePath+'/粉專數據/'+encodeURIComponent(fname)+':/content',{headers:{Authorization:'Bearer '+token}});
-          if(cr.ok){var ct=await cr.text();if(type==='health')fpHealthData[mo]=parseFpHealthCSV(ct);else fpPostsData[mo]=parseFpPostsCSV(ct);}
-        }catch(e){console.warn('skip',fname);}
-      }
+
+    // CSV 檔案
+    var csvTargets=[
+      {month:'2026-04',type:'health'},{month:'2026-04',type:'posts'},
+      {month:'2026-03',type:'health'},{month:'2026-03',type:'posts'},
+    ];
+    for(var ci=0;ci<csvTargets.length;ci++){
+      var ct=csvTargets[ci];
+      var fname=ct.month+'_'+(ct.type==='health'?'粉專整體':'貼文數據')+'.csv';
+      try{
+        var cr=await fetch(graphPath(base+'/粉專數據/'+fname)+':/content',{headers:{Authorization:'Bearer '+token}});
+        if(cr.ok){var txt=await cr.text();if(ct.type==='health')fpHealthData[ct.month]=parseFpHealthCSV(txt);else fpPostsData[ct.month]=parseFpPostsCSV(txt);}
+      }catch(e2){console.warn('skip CSV:',fname);}
     }
+
     renderFpScore();renderFpReward();renderFpHealth();renderFpPosts();
-    var now=new Date();setFpSync('同步於 '+(now.getMonth()+1)+'/'+now.getDate()+' '+String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0'));
+    var now=new Date();
+    setFpSync('同步於 '+(now.getMonth()+1)+'/'+now.getDate()+' '+String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0'));
   }catch(e){
     setFpSync('SharePoint 未連線，顯示快取數據');
     console.warn('fanpageLoad:',e);
